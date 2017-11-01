@@ -52,8 +52,7 @@ public class HelloWorldJPA extends TransactionManagerTest {
                 em.close();
             }
             {
-                // Every interaction with your database should occur within explicit transaction boundaries,
-                // even if you are only reading data.
+                // Every interaction with your database should occur within explicit transaction boundaries, even if you are only reading data.
                 UserTransaction tx = _TM.getUserTransaction();
                 tx.begin();
 
