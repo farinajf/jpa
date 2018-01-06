@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -22,6 +23,9 @@ public class Item2 {
     @Id
     @GeneratedValue(generator = "ID_GENERATOR")
     protected long id;
+
+    @NotNull
+    protected String description;
 
     protected BigDecimal initialPrice;
 
@@ -43,8 +47,10 @@ public class Item2 {
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
     public Long       getId()           {return id;}
+    public String     getDescription()  {return description;}
     public BigDecimal getInitialPrice() {return initialPrice;}
     public String     getName()         {return name;}
 
-    public void setName(String x) {name = x.startsWith(_AUCTION) == false ? _AUCTION + x : x;}
+    public void setDescription(String x) {description = x;}
+    public void setName       (String x) {name        = x.startsWith(_AUCTION) == false ? _AUCTION + x : x;}
 }
