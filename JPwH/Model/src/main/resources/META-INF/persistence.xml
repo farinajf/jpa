@@ -48,4 +48,15 @@
             -->
         </properties>
     </persistence-unit>
+    <persistence-unit name="AdvancedPU">
+        <jta-data-source>myDS</jta-data-source>
+        <class>org.jpwh.model</class>
+        <class>org.jpwh.model.advanced.Item2</class>
+        <class>org.jpwh.model.advanced.Bid</class>
+        <class>org.jpwh.model.advanced.User</class>
+        <class>org.jpwh.model.advanced.Address</class>
+        <class>org.jpwh.model.advanced.City</class>
+        <class>org.jpwh.model.advanced.ItemBidSummary</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
 </persistence>
