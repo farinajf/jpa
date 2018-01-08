@@ -13,7 +13,6 @@ import org.jpwh.model.Constants;
 
 /**
  *
- * @author fran
  */
 @Entity
 public class Category {
@@ -21,6 +20,8 @@ public class Category {
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
     protected Long id;
+
+    protected String name;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -37,5 +38,8 @@ public class Category {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long getId() {return id;};
+    public Long   getId()   {return id;};
+    public String getName() {return name;}
+
+    public void setName(String x) {this.name = x;}
 }

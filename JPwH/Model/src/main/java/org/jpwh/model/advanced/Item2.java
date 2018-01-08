@@ -11,17 +11,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+import org.jpwh.model.Constants;
 
 /**
  *
- * @author fran
  */
 @Entity
 public class Item2 {
     private static final String _AUCTION = "AUCTION: ";
 
     @Id
-    @GeneratedValue(generator = "ID_GENERATOR")
+    @GeneratedValue(generator = Constants.ID_GENERATOR)
     protected long id;
 
     @NotNull

@@ -15,7 +15,6 @@ import org.jpwh.model.Constants;
 
 /**
  *
- * @author fran
  */
 @Entity
 @Table(name = "USERS")
