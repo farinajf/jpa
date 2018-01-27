@@ -16,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -31,6 +32,9 @@ public class Item {
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
     protected Long id;
+
+    @Version
+    protected long version;
 
     @NotNull
     @Size(min = 2, max = 255, message = "Name es onbligatorio, longitud maxima de 255.")
