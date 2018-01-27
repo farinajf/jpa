@@ -39,7 +39,7 @@ public class MappingEmbeddables extends JPATest {
             User user = new User();
             user.setUsername("Juan");
 
-            Address homeAddress = new Address("Miguel de Cervantes", "123456", "A Coruña");
+            Address homeAddress = new Address("Miguel de Cervantes", "12345", "A Coruña");
             user.setHomeAddress(homeAddress);
 
             em.persist(user);
