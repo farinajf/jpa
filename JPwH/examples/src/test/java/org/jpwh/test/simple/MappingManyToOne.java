@@ -59,7 +59,7 @@ public class MappingManyToOne extends JPATest {
 
             // Initializes the Item proxy because we call getId(), which is
             // not mapped as an identifier property (the field is!)
-            Assert.assertEquals(someBid.getItem().getId(), someBid.getId());
+            Assert.assertEquals(someBid.getItem().getId(), item.getId());
 
             tx.commit();
             em.close();
