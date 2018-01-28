@@ -19,7 +19,6 @@ import org.testng.annotations.Test;
 
 /**
  *
- * @author fran
  */
 public class ModelOperations {
 
