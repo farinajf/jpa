@@ -92,4 +92,9 @@ public class Item {
 
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Item{" + "id=" + id + ", version=" + version + ", name=" + name + ", auctionEnd=" + auctionEnd + ", buyNowPrice=" + buyNowPrice + ", bids=" + bids + ", category=" + category + '}';
+    }
 }
