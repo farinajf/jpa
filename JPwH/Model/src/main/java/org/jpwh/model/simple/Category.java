@@ -12,7 +12,8 @@ import javax.persistence.Id;
 import org.jpwh.model.Constants;
 
 /**
- *
+ * Java Persistence with Hibernate 2 Ed.
+ * Ed. Manning
  */
 @Entity
 public class Category {
@@ -42,4 +43,9 @@ public class Category {
     public String getName() {return name;}
 
     public void setName(String x) {this.name = x;}
+
+    @Override
+    public String toString() {
+        return "Category{" + "id=" + id + ", name=" + name + '}';
+    }
 }
