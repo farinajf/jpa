@@ -18,7 +18,7 @@ import org.testng.annotations.Test;
 /**
  * Java Persistence with Hibernate 2 Ed.
  * Ed. Manning
- * 
+ *
  * http://jpwh.org/examples/jpwh2/jpwh-2e-examples-20151103/examples/src/test/java/org/jpwh/test/simple/SimpleTransitions.java
  */
 public class SimpleTransitions extends JPATest {
@@ -104,5 +104,69 @@ public class SimpleTransitions extends JPATest {
             em.close();
         }
         finally {_TM.rollback();}
+    }
+
+    @Test
+    public void retrievePersistent() throws Exception {
+        UserTransaction tx = _TM.getUserTransaction();
+
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            Item someItem = new Item();
+            someItem.setName("Some item");
+
+            em.persist(someItem);
+
+            tx.commit();
+            em.close();
+
+            long ITEM_ID = someItem.getId();
+
+            {
+                tx.begin();
+                em = JPA.createEntityManager();
+
+                //Hit the database if not already in persistence context
+                Item item = em.find(Item.class, ITEM_ID);
+
+                if (item != null) item.setName("New name");
+
+                tx.commit(); //SQL UPDATE
+                em.close();
+            }
+            {
+                tx.begin();
+                em = JPA.createEntityManager();
+
+                Item itemA = em.find(Item.class, ITEM_ID);
+                Item itemB = em.find(Item.class, ITEM_ID);
+
+                Assert.assertTrue(itemA == itemB);
+                Assert.assertTrue(itemA.equals(itemB));
+                Assert.assertTrue(itemA.getId().equals(itemB.getId()));
+
+                tx.commit();
+                em.close();
+            }
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            Assert.assertEquals(em.find(Item.class, ITEM_ID).getName(), "New name");
+
+            tx.commit();
+
+            em.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    @Test(expectedExceptions = org.hibernate.LazyInitializationException.class)
+    public void retrievePersistentReference() throws Exception {
+        
     }
 }
