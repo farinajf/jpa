@@ -41,6 +41,9 @@
             When remove(entity) is called, reset the identifier value of entity. so it's considered transient after removal 
             -->
             <property name="hibernate.use_identifier_rollback" value="true"/>
+            <property name="hibernate.format_sql"       value="true"/>
+            <property name="hibernate.use_sql_comments" value="true"/>
+            <property name="hibernate.show_sql"         value="true"/>
             
             <!--
             Enable this to try a custom table naming strategy

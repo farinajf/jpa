@@ -6,6 +6,7 @@
 package org.jpwh.test.simple;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceUnitUtil;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
@@ -167,6 +168,62 @@ public class SimpleTransitions extends JPATest {
 
     @Test(expectedExceptions = org.hibernate.LazyInitializationException.class)
     public void retrievePersistentReference() throws Exception {
-        
+        UserTransaction tx = _TM.getUserTransaction();
+
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            Item someItem = new Item();
+            someItem.setName("Some item");
+
+            em.persist(someItem);
+
+            tx.commit();
+            em.close();
+
+            long ITEM_ID = someItem.getId();
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            /*
+            If the persistence context already contains an Item with the given identifier,
+            that Item instance is returned by getReference() without hitting the database.
+            Furthermore, if no persistence instance with that identifier is currently managed,
+            a hollow placeholder will be produced by Hibernate, a proxy.
+            This menans getReference() will not access the database, and it doesn't return
+            null, unlike find()
+            */
+            Item item = em.getReference(Item.class, ITEM_ID);
+
+            /*
+            JPA offers PersistenceUnitUtil helper methods such as isLoaded() to detect
+            if you are working with an uninitialized proxy.
+            */
+            PersistenceUnitUtil persistenceUnitUtil = JPA.getEntityManagerFactory().getPersistenceUnitUtil();
+
+            Assert.assertFalse(persistenceUnitUtil.isLoaded(item));
+
+            /*
+            Hibernate has a convenient static initialize() method, loading the proxy's data
+            */
+            //Hibernate.initialize(item);
+
+            tx.commit();
+            em.close();
+
+            /*
+            After the persistence context is closed, item is in detached state. If you
+            do not initialize the proxy while the persistence context is still open,
+            you get a lazyInitializationException if you access the proxy. You can't
+            load data on-demand once the persistence context is closed. The solution
+            is simple: Load the data before you close the persistence context.
+             */
+            Assert.assertEquals(item.getName(), "Some item");
+        }
+        finally {_TM.rollback();}
     }
 }
