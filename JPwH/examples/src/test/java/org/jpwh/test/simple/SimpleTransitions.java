@@ -226,4 +226,87 @@ public class SimpleTransitions extends JPATest {
         }
         finally {_TM.rollback();}
     }
+
+    @Test
+    public void makeTransient() throws Exception {
+        UserTransaction tx = _TM.getUserTransaction();
+
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            Item someItem = new Item();
+
+            someItem.setName("Some item");
+
+            em.persist(someItem);
+
+            tx.commit();
+            em.close();
+
+            long ITEM_ID = someItem.getId();
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            /*
+            If you call find(), Hibernate will execute a SELECT to load the Item.
+            If you call getReference(), Hibernate will attempt to avoid the SELECT
+            and return a proxy.
+            */
+            Item item = em.find(Item.class, ITEM_ID);
+            //Item item = em.getReference(Item.class, ITEM_ID):
+
+            /*
+            Calling remove() will queue the entity instance for deletion when the unit
+            of work completes, it is now in removed state. If remove() is called
+            on a proxy, Hibernate will execute a SELECT to load the data.
+            An entity instance has to be fully initialized during life cycle transitions.
+            You may have life cycle callback methods or an entity listener enabled,
+            and the instance must pass through these interceptors to complete its full life cycle.
+            */
+            em.remove(item);
+
+            /*
+            An entity in removed state is no longer in persitent state, this can be checked
+            with the contains() operation.
+            */
+            Assert.assertFalse(em.contains(item));
+
+            /*
+            You can make the removed instance persistent again, cancelling the deletion.
+            */
+            //em.persist(item);
+
+            // hibernate.use_identifier_rollback was enabled, it now looks like a transient instance
+            Assert.assertNull(item.getId());
+
+            /*
+            When the transaction commits, Hibernate synchronizes the state transitions with the
+            database and executes the SQL DELETE. The JVM garbage collector detects that the item
+            is no longer referenced by anyone and finally deletes the last trace of the data.
+            */
+
+            tx.commit();
+            em.close();
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            item = em.find(Item.class, ITEM_ID);
+
+            Assert.assertNull(item);
+
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    @Test
+    public void refresh() throws Exception {
+        
+    }
 }
