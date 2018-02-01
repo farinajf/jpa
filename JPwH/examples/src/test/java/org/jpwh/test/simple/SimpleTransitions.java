@@ -5,11 +5,18 @@
  */
 package org.jpwh.test.simple;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceUnitUtil;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
 import org.jpwh.env.JPATest;
 import org.jpwh.model.simple.Category;
 import org.jpwh.model.simple.Item;
@@ -257,8 +264,9 @@ public class SimpleTransitions extends JPATest {
             and return a proxy.
             */
             Item item = em.find(Item.class, ITEM_ID);
-            //Item item = em.getReference(Item.class, ITEM_ID):
+            //Item item = em.getReference(Item.class, ITEM_ID);
 
+            System.out.println("1111111111111111111111111111111111111111111111111111111111111111111111111111");
             /*
             Calling remove() will queue the entity instance for deletion when the unit
             of work completes, it is now in removed state. If remove() is called
@@ -288,6 +296,7 @@ public class SimpleTransitions extends JPATest {
             database and executes the SQL DELETE. The JVM garbage collector detects that the item
             is no longer referenced by anyone and finally deletes the last trace of the data.
             */
+            System.out.println("222222222222222222222222222222222222222222222222222222222222222222222222222");
 
             tx.commit();
             em.close();
@@ -307,6 +316,88 @@ public class SimpleTransitions extends JPATest {
 
     @Test
     public void refresh() throws Exception {
+        UserTransaction tx = _TM.getUserTransaction();
+
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            Item someItem = new Item();
+            someItem.setName("Some item");
+            em.persist(someItem);
+
+            tx.commit();
+            em.close();
+
+            final long ITEM_ID = someItem.getId();
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            Item item = em.find(Item.class, ITEM_ID);
+            item.setName("Some name");
+            System.out.println("...............................111111111............................");
+
+            // Someone updates this row in the database!
+            Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    UserTransaction tx = _TM.getUserTransaction();
+                    try
+                    {
+                        tx.begin();
+
+                        EntityManager em = JPA.createEntityManager();
+
+                        Session session = em.unwrap(Session.class);
+
+                        session.doWork(new Work() {
+                            @Override
+                            public void execute(Connection con) throws SQLException {
+                                PreparedStatement ps = con.prepareStatement("update ITEM set name = ? where ID = ?");
+                                ps.setString(1, "Concurrent Update Name");
+                                ps.setLong(2, ITEM_ID);
+
+                                /*
+                                Alternative: you get a EntityNotFoundException on refresh
+                                PreparedStatement ps = con.prepareStatement("delete from ITEM where ID = ?");
+                                ps.setLong(1, ITEM_ID);
+                                */
+
+                                if (ps.executeUpdate() != 1) throw new SQLException("ITEM row was not updated");
+                                System.out.println("...............................222222222............................");
+                            }
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        _TM.rollback();
+                        throw new RuntimeException("Concurrent operation failure: " + e, e);
+                    }
+
+                    return null;
+                }
+            }).get();
+
+            String oldName = item.getName();
+
+            System.out.println("...............................333333333............................");
+            em.refresh(item);
+
+            Assert.assertNotEquals(item.getName(), oldName);
+            Assert.assertEquals(item.getName(), "Concurrent Update Name");
+
+            System.out.println("...............................444444444............................");
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    @Test(groups = {"H2", "POSTGRESQL", "ORACLE"})
+    public void replicate() throws Exception {
         
     }
 }
