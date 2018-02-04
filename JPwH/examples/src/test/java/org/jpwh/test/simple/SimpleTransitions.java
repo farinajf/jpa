@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceUnitUtil;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -396,8 +398,119 @@ public class SimpleTransitions extends JPATest {
         finally {_TM.rollback();}
     }
 
+    /**
+     * Replica el objeto ITEM en otra base de datos.
+     * @throws Exception
+     */
     @Test(groups = {"H2", "POSTGRESQL", "ORACLE"})
     public void replicate() throws Exception {
-        
+        long ITEM_ID;
+
+        try
+        {
+            UserTransaction tx = _TM.getUserTransaction();
+
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            Item someItem = new Item();
+            someItem.setName("Some item");
+
+            em.persist(someItem);
+
+            tx.commit();
+            em.close();
+
+            ITEM_ID = someItem.getId();
+        }
+        finally {_TM.rollback();}
+
+        UserTransaction tx = _TM.getUserTransaction();
+
+        try
+        {
+            tx.begin();
+            EntityManager emA = _getDatabaseA().createEntityManager();
+
+            Item item = emA.find(Item.class, ITEM_ID);
+
+            EntityManager emB = _getDatabaseB().createEntityManager();
+
+            emB.unwrap(Session.class).replicate(item, org.hibernate.ReplicationMode.LATEST_VERSION);
+
+            tx.commit();
+            emA.close();
+            emB.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    protected EntityManagerFactory _getDatabaseA() {return JPA.getEntityManagerFactory();}
+    protected EntityManagerFactory _getDatabaseB() {return JPA.getEntityManagerFactory();}
+
+    /**
+     * Deshabilita FLUSH antes de ejecutar una QUERY
+     * @throws Exception
+     */
+    @Test
+    public void flushModeType() throws Exception {
+        UserTransaction tx = _TM.getUserTransaction();
+
+        Long ITEM_ID;
+
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            Item someItem = new Item();
+            someItem.setName("Original name");
+
+            em.persist(someItem);
+
+            tx.commit();
+            em.close();
+
+            ITEM_ID = someItem.getId();
+        }
+        finally {_TM.rollback();}
+
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            Item item = em.find(Item.class, ITEM_ID);
+            item.setName("New name");
+
+            //Disable flushing before queries
+            em.setFlushMode(FlushModeType.COMMIT);
+
+            System.out.println("...................................................");
+            System.out.println(em.createQuery("select i.name from Item i where i.id = :id").setParameter("id", ITEM_ID).getSingleResult());
+            System.out.println("...................................................");
+
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    @Test
+    public void scopeOfIdentity() throws Exception {
+
+    }
+
+    @Test
+    public void detach() throws Exception {
+
+    }
+
+    @Test
+    public void mergeDetached() throws Exception {
+
     }
 }
