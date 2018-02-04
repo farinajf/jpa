@@ -8,6 +8,8 @@ package org.jpwh.test.simple;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
@@ -20,8 +22,10 @@ import javax.transaction.UserTransaction;
 import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
 import org.jpwh.env.JPATest;
+import org.jpwh.model.simple.Address;
 import org.jpwh.model.simple.Category;
 import org.jpwh.model.simple.Item;
+import org.jpwh.model.simple.User;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -501,16 +505,143 @@ public class SimpleTransitions extends JPATest {
 
     @Test
     public void scopeOfIdentity() throws Exception {
+        UserTransaction tx = _TM.getUserTransaction();
 
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            Item someItem = new Item();
+            someItem.setName("Some item");
+
+            em.persist(someItem);
+
+            tx.commit();
+            em.close();
+            long ITEM_ID = someItem.getId();
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            Item a = em.find(Item.class, ITEM_ID);
+            Item b = em.find(Item.class, ITEM_ID);
+
+            Assert.assertTrue(a == b);
+            Assert.assertTrue(a.equals(b));
+            Assert.assertEquals(a.getId(), b.getId());
+
+            tx.commit();
+            em.close();
+            //PC is gone, 'a' and 'b' are now references to instances in detached state!
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            Item c = em.find(Item.class, ITEM_ID);
+
+            Assert.assertTrue(a != c);
+            Assert.assertFalse(a.equals(c));
+            Assert.assertEquals(a.getId(), c.getId());
+
+            tx.commit();
+            em.close();
+
+            Set<Item> allItems = new HashSet<>();
+
+            allItems.add(a);
+            allItems.add(b);
+            allItems.add(c);
+
+            Assert.assertEquals(allItems.size(), 2);
+        }
+        finally {_TM.rollback();}
     }
 
     @Test
     public void detach() throws Exception {
+        UserTransaction tx = _TM.getUserTransaction();
 
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            User someUSer = new User();
+
+            someUSer.setUsername("juan");
+            someUSer.setHomeAddress(new Address("Some street", "1234", "Some city"));
+
+            em.persist(someUSer);
+
+            tx.commit();
+            em.close();
+
+            long USER_ID = someUSer.getId();
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            User user = em.find(User.class, USER_ID);
+
+            em.detach(user);
+
+            Assert.assertFalse(em.contains(user));
+
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
     }
 
     @Test
     public void mergeDetached() throws Exception {
+        UserTransaction tx = _TM.getUserTransaction();
 
+        try
+        {
+            tx.begin();
+
+            EntityManager em = JPA.createEntityManager();
+
+            User detachedUser = new User();
+
+            detachedUser.setUsername("juan");
+            detachedUser.setHomeAddress(new Address("Some street", "1234", "Some city"));
+
+            em.persist(detachedUser);
+
+            tx.commit();
+            em.close();
+
+            long USER_ID = detachedUser.getId();
+
+            detachedUser.setUsername("fran");
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            User mergedUser = em.merge(detachedUser);
+            // Discard 'detachedUser' reference after merging!
+
+            // The 'mergedUser' is in persistent state
+            mergedUser.setUsername("alejandro");
+
+            tx.commit(); // UPDATE in database
+            em.close();
+
+            tx.begin();
+            em = JPA.createEntityManager();
+
+            User user = em.find(User.class, USER_ID);
+
+            Assert.assertEquals(user.getUsername(), "alejandro");
+
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
     }
 }
