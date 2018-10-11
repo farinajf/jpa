@@ -12,6 +12,11 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         
         <properties>
+            <!-- 
+                The JPA engine should drop and re-create the SQL schema in the database
+                automatically when it boots. This is ideal for automated testing, when
+                you want to work with a clean database for every test run.
+            -->
             <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
             <property name="hibernate.format_sql"       value="true"/>
             <property name="hibernate.use_sql_comments" value="true"/>

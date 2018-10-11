@@ -19,6 +19,8 @@ import org.jpwh.model.Constants;
  *
  */
 @Entity
+@org.hibernate.annotations.Immutable
+
 public class Bid {
 
     @Id
