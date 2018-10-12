@@ -53,7 +53,7 @@ public class CRUD extends JPATest {
 
             EntityManager em = JPA.createEntityManager();
 
-            Item x1 = new Item();
+            Item      x1 = new Item();
             x1.setNombre    ("Articulo-1");
             x1.setAuctionEnd(new Date(System.currentTimeMillis() + 100000));
 
@@ -61,6 +61,8 @@ public class CRUD extends JPATest {
 
             tx.commit();
             em.close();
+
+            System.out.println("item: " + x1);
         }
         finally {_TM.rollback();}
     }
