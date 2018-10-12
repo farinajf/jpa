@@ -12,6 +12,7 @@
 
         <class>es.my.model</class>
         <class>es.my.model.entities.Item</class>
+        <class>es.my.model.entities.Categoria</class>
         
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

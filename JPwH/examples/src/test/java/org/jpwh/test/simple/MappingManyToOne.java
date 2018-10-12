@@ -5,12 +5,12 @@
  */
 package org.jpwh.test.simple;
 
+import es.my.model.entities.Bid;
 import es.my.model.entities.Item;
 import java.math.BigDecimal;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 import org.jpwh.env.JPATest;
-import org.jpwh.model.simple.Bid;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

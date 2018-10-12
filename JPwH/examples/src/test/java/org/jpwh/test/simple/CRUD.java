@@ -7,6 +7,7 @@
 package org.jpwh.test.simple;
 
 import es.my.model.entities.Item;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -57,12 +58,12 @@ public class CRUD extends JPATest {
 
             Item itemOne = new Item();
             itemOne.setNombre("Item One");
-            //itemOne.setAuctionEnd(new Date(System.currentTimeMillis() + 100000));
+            itemOne.setAuctionEnd(new Date(System.currentTimeMillis() + 100000));
             em.persist(itemOne);
 
             Item itemTwo = new Item();
             itemTwo.setNombre("Item Two");
-            //itemTwo.setAuctionEnd(new Date(System.currentTimeMillis() + 100000));
+            itemTwo.setAuctionEnd(new Date(System.currentTimeMillis() + 100000));
             em.persist(itemTwo);
 
             tx.commit();

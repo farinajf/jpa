@@ -5,6 +5,7 @@
  */
 package org.jpwh.test.simple;
 
+import es.my.model.entities.Bid;
 import es.my.model.entities.Item;
 import java.util.Locale;
 import java.util.Set;
@@ -12,7 +13,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import org.jpwh.model.simple.Bid;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

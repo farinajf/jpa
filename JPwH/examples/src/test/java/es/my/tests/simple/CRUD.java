@@ -7,6 +7,7 @@
 package es.my.tests.simple;
 
 import es.my.model.entities.Item;
+import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 import org.jpwh.env.JPATest;
@@ -53,7 +54,8 @@ public class CRUD extends JPATest {
             EntityManager em = JPA.createEntityManager();
 
             Item x1 = new Item();
-            x1.setNombre("Articulo-1");
+            x1.setNombre    ("Articulo-1");
+            x1.setAuctionEnd(new Date(System.currentTimeMillis() + 100000));
 
             em.persist(x1);
 
