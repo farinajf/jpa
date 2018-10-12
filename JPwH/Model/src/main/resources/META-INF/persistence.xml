@@ -10,6 +10,9 @@
     <persistence-unit name="mySimplePUnit">
         <jta-data-source>myDS</jta-data-source>
 
+        <class>es.my.model</class>
+        <class>es.my.model.entities.Item</class>
+        
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>

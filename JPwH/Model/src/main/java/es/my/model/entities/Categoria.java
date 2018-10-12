@@ -3,37 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jpwh.model.simple;
+
+package es.my.model.entities;
 
 import es.my.model.Constants;
-import es.my.model.entities.Item;
-import java.math.BigDecimal;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 
 /**
  *
+ * @author fran
  */
 @Entity
-@org.hibernate.annotations.Immutable
-
-public class Bid {
+public class Categoria {
 
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
-    protected Long id;
+    private Long id;
 
-    @NotNull
-    protected BigDecimal amount;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ITEM_ID")
-    protected Item item;
+    private String nombre;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -46,25 +35,17 @@ public class Bid {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    public Bid() {}
-
-    public Bid(Item item) {
-        this.item = item;
-        //this.item.getBids().add(this);
-    }
-
-    public Bid(BigDecimal amount, Item item) {
-        this.amount = amount;
-        this.item   = item;
-    }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public BigDecimal getAmount() {return amount;}
-    public Long       getId()     {return id;}
-    public Item       getItem()   {return item;}
+    public Long   getId()     {return id;};
+    public String getNombre() {return nombre;}
 
-    public void setAmount(BigDecimal x) {this.amount = x;}
-    public void setItem  (Item       x) {this.item   = x;}
+    public void setNombre(String x) {this.nombre = x;}
+
+    @Override
+    public String toString() {
+        return "Category{" + "id=" + id + ", nombre=" + nombre + '}';
+    }
 }

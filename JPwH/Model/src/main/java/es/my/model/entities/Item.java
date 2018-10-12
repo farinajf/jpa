@@ -4,25 +4,44 @@
  * and open the template in the editor.
  */
 
-package org.jpwh.model.simple;
+package es.my.model.entities;
 
+import es.my.model.Constants;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import es.my.model.Constants;
+import javax.persistence.Transient;
+import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
- * Java Persistence with Hibernate 2 Ed.
- * Ed. Manning
+ *
+ * @author fran
  */
 @Entity
-public class Category {
+public class Item {
 
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
-    protected Long id;
+    private Long id;
 
-    protected String name;
+    @Version
+    private long version;
+
+    @NotNull
+    @Size(min = 1, max = 10, message = "El nombre es obligatorio!!")
+    private String nombre;
+
+    private BigDecimal price;
+
+    @Transient
+    private Set<Bid> bids = new HashSet<>();
+
+    private Categoria categoria;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -39,13 +58,25 @@ public class Category {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long   getId()   {return id;};
-    public String getName() {return name;}
+    public Long     getId()     {return id;}
+    public String   getNombre() {return nombre;}
+    public Set<Bid> getBids()   {return bids;}
 
-    public void setName(String x) {this.name = x;}
+    public void setNombre(final String   x) {this.nombre = x;}
+    public void setBids  (final Set<Bid> x) {this.bids   = x;}
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
-        return "Category{" + "id=" + id + ", name=" + name + '}';
+        return "Articulo{" + "id=" + id +
+               ", version=" + version +
+                ", nombre=" + nombre +
+                ", price=" + price +
+                ", categoria=" + categoria +
+                ", bids=" + bids +
+               '}';
     }
 }

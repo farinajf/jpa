@@ -4,15 +4,12 @@
  * and open the template in the editor.
  */
 
-package org.jpwh.test.simple;
+package es.my.tests.simple;
 
 import es.my.model.entities.Item;
-import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.transaction.UserTransaction;
 import org.jpwh.env.JPATest;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -38,15 +35,15 @@ public class CRUD extends JPATest {
     /**************************************************************************/
     @Override
     public void configurePersistenceUnit() throws Exception {
-        configurePersistenceUnit("SimplePU");
+        configurePersistenceUnit("mySimplePUnit");
     }
 
     @Test
-    public void storeAndQueryItems() throws Exception {
-        storeAndQueryItems("findItems");
+    public void saveAndQuery() throws Exception {
+        this.saveAndQuery("");
     }
 
-    public void storeAndQueryItems(String queryName) throws Exception {
+    public void saveAndQuery(final String query) throws Exception {
         UserTransaction tx = _TM.getUserTransaction();
 
         try
@@ -55,31 +52,13 @@ public class CRUD extends JPATest {
 
             EntityManager em = JPA.createEntityManager();
 
-            Item itemOne = new Item();
-            itemOne.setNombre("Item One");
-            //itemOne.setAuctionEnd(new Date(System.currentTimeMillis() + 100000));
-            em.persist(itemOne);
+            Item x1 = new Item();
+            x1.setNombre("Articulo-1");
 
-            Item itemTwo = new Item();
-            itemTwo.setNombre("Item Two");
-            //itemTwo.setAuctionEnd(new Date(System.currentTimeMillis() + 100000));
-            em.persist(itemTwo);
+            em.persist(x1);
 
             tx.commit();
             em.close();
-
-            tx.begin();
-            em = JPA.createEntityManager();
-
-            Query q = em.createNamedQuery(queryName);
-
-            List<Item> items = q.getResultList();
-
-            Assert.assertEquals(items.size(), 2);
-
-            tx.commit();
-            em.close();
-
         }
         finally {_TM.rollback();}
     }

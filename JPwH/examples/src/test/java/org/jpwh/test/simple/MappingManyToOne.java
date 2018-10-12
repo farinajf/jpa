@@ -5,12 +5,12 @@
  */
 package org.jpwh.test.simple;
 
+import es.my.model.entities.Item;
 import java.math.BigDecimal;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 import org.jpwh.env.JPATest;
 import org.jpwh.model.simple.Bid;
-import org.jpwh.model.simple.Item;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +35,7 @@ public class MappingManyToOne extends JPATest {
 
             // Store in one persistence context (transaction)
             Item item = new Item();
-            item.setName("Nuevo item");
+            item.setNombre("Nuevo item");
 
             Bid firstBid  = new Bid(new BigDecimal("123.00"), item);
             Bid secondBid = new Bid(new BigDecimal("456.00"), item);

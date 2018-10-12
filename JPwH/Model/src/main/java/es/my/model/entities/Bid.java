@@ -10,27 +10,17 @@ import es.my.model.Constants;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  *
  * @author fran
  */
 @Entity
-public class Articulo {
+public class Bid {
 
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
     private Long id;
-
-    @Version
-    private long version;
-
-    @NotNull
-    @Size(min = 1, max = 10, message = "El nombre es obligatorio!!")
-    private String nombre;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -47,20 +37,5 @@ public class Articulo {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long   getId()     {return id;}
-    public String getNombre() {return nombre;}
 
-    public void setNombre(final String x) {this.nombre = x;}
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String toString() {
-        return "Articulo{" + "id=" + id +
-               ", version=" + version +
-                ", nombre=" + nombre +
-               '}';
-    }
 }
