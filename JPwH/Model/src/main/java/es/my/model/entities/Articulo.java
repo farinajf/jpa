@@ -4,42 +4,33 @@
  * and open the template in the editor.
  */
 
-package org.jpwh.model.simple;
+package es.my.model.entities;
 
-import java.io.Serializable;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
+import es.my.model.Constants;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import es.my.model.Constants;
+import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
+ * @author fran
  */
 @Entity
-@Table(name = "USERS")
-public class User implements Serializable {
+public class Articulo {
 
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
-    protected Long id;
+    private Long id;
 
-    protected String username;
+    @Version
+    private long version;
 
-    // Address is @Embeddable, no annotation needed here...
-    protected Address homeAddress;
-
-    @Embedded //Not necessary...
-    @AttributeOverrides({
-        @AttributeOverride(name = "street",  column = @Column(name = "BILLING_STREET")), //Nullable
-        @AttributeOverride(name = "zipcode", column = @Column(name = "BILLING_ZIPCODE", length = 5)),
-        @AttributeOverride(name = "city",    column = @Column(name = "BILLING_CITY"))
-    })
-    protected Address billingAddress;
+    @NotNull
+    @Size(min = 1, max = 10, message = "El nombre es obligatorio!!")
+    private String nombre;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -56,12 +47,20 @@ public class User implements Serializable {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long    getId()             {return id;}
-    public String  getUsername()       {return username;}
-    public Address getHomeAddress()    {return homeAddress;}
-    public Address getBillingAddress() {return billingAddress;}
+    public Long   getId()     {return id;}
+    public String getNombre() {return nombre;}
 
-    public void setUsername      (String  x) {this.username       = x;}
-    public void setHomeAddress   (Address x) {this.homeAddress    = x;}
-    public void setBillingAddress(Address x) {this.billingAddress = x;}
+    public void setNombre(final String x) {this.nombre = x;}
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return "Articulo{" + "id=" + id +
+               ", version=" + version +
+                ", nombre=" + nombre +
+               '}';
+    }
 }

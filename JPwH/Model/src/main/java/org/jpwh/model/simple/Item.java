@@ -20,7 +20,7 @@ import javax.persistence.Version;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import org.jpwh.model.Constants;
+import es.my.model.Constants;
 
 /**
  * Java Persistence with Hibernate 2 Ed.

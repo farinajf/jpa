@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-import org.jpwh.model.Constants;
+import es.my.model.Constants;
 
 /**
  *

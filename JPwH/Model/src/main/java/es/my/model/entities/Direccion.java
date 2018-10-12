@@ -4,25 +4,16 @@
  * and open the template in the editor.
  */
 
-package org.jpwh.model.simple;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import es.my.model.Constants;
+package es.my.model.entities;
 
 /**
- * Java Persistence with Hibernate 2 Ed.
- * Ed. Manning
+ *
+ * @author fran
  */
-@Entity
-public class Category {
+public class Direccion {
 
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
-    protected Long id;
-
-    protected String name;
+    private String calle;
+    private String zip;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -35,17 +26,19 @@ public class Category {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
+    protected Direccion() {}
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long   getId()   {return id;};
-    public String getName() {return name;}
+    public String getCalle() {return calle;}
+    public String getZip()   {return zip;}
 
-    public void setName(String x) {this.name = x;}
+    public void setCalle(String x) {this.calle = x;}
+    public void setZip  (String x) {this.zip   = x;}
 
     @Override
     public String toString() {
-        return "Category{" + "id=" + id + ", name=" + name + '}';
+        return "Direccion{" + "calle=" + calle + ", zip=" + zip + '}';
     }
 }

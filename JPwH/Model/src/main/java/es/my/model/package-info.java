@@ -12,4 +12,4 @@
             )
         }
 )
-package org.jpwh.model;
+package es.my.model;

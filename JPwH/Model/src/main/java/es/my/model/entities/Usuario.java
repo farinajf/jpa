@@ -4,42 +4,26 @@
  * and open the template in the editor.
  */
 
-package org.jpwh.model.simple;
+package es.my.model.entities;
 
+import es.my.model.Constants;
 import java.io.Serializable;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import es.my.model.Constants;
 
 /**
  *
+ * @author fran
  */
 @Entity
-@Table(name = "USERS")
-public class User implements Serializable {
+public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
-    protected Long id;
-
-    protected String username;
-
-    // Address is @Embeddable, no annotation needed here...
-    protected Address homeAddress;
-
-    @Embedded //Not necessary...
-    @AttributeOverrides({
-        @AttributeOverride(name = "street",  column = @Column(name = "BILLING_STREET")), //Nullable
-        @AttributeOverride(name = "zipcode", column = @Column(name = "BILLING_ZIPCODE", length = 5)),
-        @AttributeOverride(name = "city",    column = @Column(name = "BILLING_CITY"))
-    })
-    protected Address billingAddress;
+    private Long      id;
+    private String    name;
+    private Direccion direccion;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -56,12 +40,5 @@ public class User implements Serializable {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long    getId()             {return id;}
-    public String  getUsername()       {return username;}
-    public Address getHomeAddress()    {return homeAddress;}
-    public Address getBillingAddress() {return billingAddress;}
 
-    public void setUsername      (String  x) {this.username       = x;}
-    public void setHomeAddress   (Address x) {this.homeAddress    = x;}
-    public void setBillingAddress(Address x) {this.billingAddress = x;}
 }

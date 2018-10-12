@@ -13,7 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-import org.jpwh.model.Constants;
+import es.my.model.Constants;
 
 /**
  *
