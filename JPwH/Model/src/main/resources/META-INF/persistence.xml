@@ -34,6 +34,9 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="DemoPUnit">
+        
+    </persistence-unit>
     <!-- *********************************************************************** -->
     <persistence-unit name="HelloWorldPU">
         <jta-data-source>myDS</jta-data-source>
