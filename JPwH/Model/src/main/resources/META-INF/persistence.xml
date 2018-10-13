@@ -9,6 +9,8 @@
     -->
     <persistence-unit name="mySimplePUnit">
         <jta-data-source>myDS</jta-data-source>
+        
+        <mapping-file>simple/Queries.xml</mapping-file>
 
         <class>es.my.model</class>
         <class>es.my.model.entities.Item</class>

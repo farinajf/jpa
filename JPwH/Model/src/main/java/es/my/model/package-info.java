@@ -4,7 +4,7 @@
         parameters = {
             @org.hibernate.annotations.Parameter(
                     name = "sequence_name",
-                    value = "JPWH_SEQUENCE"
+                    value = "MY_SEQUENCE"
             ),
             @org.hibernate.annotations.Parameter(
                     name = "initial_value",
