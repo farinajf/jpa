@@ -5,7 +5,6 @@
  */
 package org.jpwh.test.simple;
 
-import es.my.model.entities.Categoria;
 import es.my.model.entities.Item;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,14 +17,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceUnitUtil;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
 import org.jpwh.env.JPATest;
-import org.jpwh.model.simple.Address;
-import org.jpwh.model.simple.User;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,146 +33,6 @@ import org.testng.annotations.Test;
 public class SimpleTransitions extends JPATest {
     @Override
     public void configurePersistenceUnit() throws Exception {configurePersistenceUnit("SimplePU");}
-
-    @Test
-    public void basicUOW() {
-        EntityManager   em = null;
-        UserTransaction tx = _TM.getUserTransaction();
-
-        try
-        {
-            tx.begin();
-            em = JPA.createEntityManager();
-
-            Item item = new Item();
-            item.setNombre("Some item");
-
-            em.persist(item);
-
-            tx.commit();
-        }
-        catch (Exception e)
-        {
-            try
-            {
-                if (tx.getStatus() == Status.STATUS_ACTIVE || tx.getStatus() == Status.STATUS_MARKED_ROLLBACK) tx.rollback();
-            }
-            catch (IllegalStateException | SecurityException | SystemException ex)
-            {
-                System.err.println("Rollback of transation failed!!");
-                ex.printStackTrace(System.err);
-            }
-            throw new RuntimeException(e);
-        }
-        finally {if (em != null && em.isOpen()) em.close();}
-    }
-
-    @Test
-    public void makePersistent() throws Exception {
-        UserTransaction tx = _TM.getUserTransaction();
-
-        try
-        {
-            EntityManager em = JPA.createEntityManager();
-
-            tx.begin();
-
-            Item item = new Item();
-
-            item.setNombre("Some Item");
-
-            // Make persistent
-            em.persist(item);
-
-            Categoria category = new Categoria();
-            category.setNombre("Mi categoria");
-            //item.setCategory(category);
-
-            em.persist(category);
-
-            Long ITEM_ID = item.getId();
-            System.out.println("-------------------------------------> " + ITEM_ID);
-
-            tx.commit();
-            em.close();
-
-            /*-------------------------------------------------------------------*/
-            tx.begin();
-
-            em = JPA.createEntityManager();
-            Item o = em.find(Item.class, ITEM_ID);
-
-            System.out.println("----------------------------------------------------");
-            System.out.println(o);
-            System.out.println("----------------------------------------------------");
-
-            Assert.assertEquals(o.getNombre(),               "Some Item");
-            //Assert.assertEquals(o.getCategory().getName(), "Mi categoria");
-
-            tx.commit();
-            em.close();
-        }
-        finally {_TM.rollback();}
-    }
-
-    @Test
-    public void retrievePersistent() throws Exception {
-        UserTransaction tx = _TM.getUserTransaction();
-
-        try
-        {
-            tx.begin();
-
-            EntityManager em = JPA.createEntityManager();
-
-            Item someItem = new Item();
-            someItem.setNombre("Some item");
-
-            em.persist(someItem);
-
-            tx.commit();
-            em.close();
-
-            long ITEM_ID = someItem.getId();
-
-            {
-                tx.begin();
-                em = JPA.createEntityManager();
-
-                //Hit the database if not already in persistence context
-                Item item = em.find(Item.class, ITEM_ID);
-
-                if (item != null) item.setNombre("New name");
-
-                tx.commit(); //SQL UPDATE
-                em.close();
-            }
-            {
-                tx.begin();
-                em = JPA.createEntityManager();
-
-                Item itemA = em.find(Item.class, ITEM_ID);
-                Item itemB = em.find(Item.class, ITEM_ID);
-
-                Assert.assertTrue(itemA == itemB);
-                Assert.assertTrue(itemA.equals(itemB));
-                Assert.assertTrue(itemA.getId().equals(itemB.getId()));
-
-                tx.commit();
-                em.close();
-            }
-
-            tx.begin();
-            em = JPA.createEntityManager();
-
-            Assert.assertEquals(em.find(Item.class, ITEM_ID).getNombre(), "New name");
-
-            tx.commit();
-
-            em.close();
-        }
-        finally {_TM.rollback();}
-    }
 
     @Test(expectedExceptions = org.hibernate.LazyInitializationException.class)
     public void retrievePersistentReference() throws Exception {
@@ -559,89 +414,89 @@ public class SimpleTransitions extends JPATest {
         finally {_TM.rollback();}
     }
 
-    @Test
-    public void detach() throws Exception {
-        UserTransaction tx = _TM.getUserTransaction();
-
-        try
-        {
-            tx.begin();
-
-            EntityManager em = JPA.createEntityManager();
-
-            User someUSer = new User();
-
-            someUSer.setUsername("juan");
-            someUSer.setHomeAddress(new Address("Some street", "1234", "Some city"));
-
-            em.persist(someUSer);
-
-            tx.commit();
-            em.close();
-
-            long USER_ID = someUSer.getId();
-
-            tx.begin();
-            em = JPA.createEntityManager();
-
-            User user = em.find(User.class, USER_ID);
-
-            em.detach(user);
-
-            Assert.assertFalse(em.contains(user));
-
-            tx.commit();
-            em.close();
-        }
-        finally {_TM.rollback();}
-    }
-
-    @Test
-    public void mergeDetached() throws Exception {
-        UserTransaction tx = _TM.getUserTransaction();
-
-        try
-        {
-            tx.begin();
-
-            EntityManager em = JPA.createEntityManager();
-
-            User detachedUser = new User();
-
-            detachedUser.setUsername("juan");
-            detachedUser.setHomeAddress(new Address("Some street", "1234", "Some city"));
-
-            em.persist(detachedUser);
-
-            tx.commit();
-            em.close();
-
-            long USER_ID = detachedUser.getId();
-
-            detachedUser.setUsername("fran");
-
-            tx.begin();
-            em = JPA.createEntityManager();
-
-            User mergedUser = em.merge(detachedUser);
-            // Discard 'detachedUser' reference after merging!
-
-            // The 'mergedUser' is in persistent state
-            mergedUser.setUsername("alejandro");
-
-            tx.commit(); // UPDATE in database
-            em.close();
-
-            tx.begin();
-            em = JPA.createEntityManager();
-
-            User user = em.find(User.class, USER_ID);
-
-            Assert.assertEquals(user.getUsername(), "alejandro");
-
-            tx.commit();
-            em.close();
-        }
-        finally {_TM.rollback();}
-    }
+//    @Test
+//    public void detach() throws Exception {
+//        UserTransaction tx = _TM.getUserTransaction();
+//
+//        try
+//        {
+//            tx.begin();
+//
+//            EntityManager em = JPA.createEntityManager();
+//
+//            User someUSer = new User();
+//
+//            someUSer.setUsername("juan");
+//            someUSer.setHomeAddress(new Address("Some street", "1234", "Some city"));
+//
+//            em.persist(someUSer);
+//
+//            tx.commit();
+//            em.close();
+//
+//            long USER_ID = someUSer.getId();
+//
+//            tx.begin();
+//            em = JPA.createEntityManager();
+//
+//            User user = em.find(User.class, USER_ID);
+//
+//            em.detach(user);
+//
+//            Assert.assertFalse(em.contains(user));
+//
+//            tx.commit();
+//            em.close();
+//        }
+//        finally {_TM.rollback();}
+//    }
+//
+//    @Test
+//    public void mergeDetached() throws Exception {
+//        UserTransaction tx = _TM.getUserTransaction();
+//
+//        try
+//        {
+//            tx.begin();
+//
+//            EntityManager em = JPA.createEntityManager();
+//
+//            User detachedUser = new User();
+//
+//            detachedUser.setUsername("juan");
+//            detachedUser.setHomeAddress(new Address("Some street", "1234", "Some city"));
+//
+//            em.persist(detachedUser);
+//
+//            tx.commit();
+//            em.close();
+//
+//            long USER_ID = detachedUser.getId();
+//
+//            detachedUser.setUsername("fran");
+//
+//            tx.begin();
+//            em = JPA.createEntityManager();
+//
+//            User mergedUser = em.merge(detachedUser);
+//            // Discard 'detachedUser' reference after merging!
+//
+//            // The 'mergedUser' is in persistent state
+//            mergedUser.setUsername("alejandro");
+//
+//            tx.commit(); // UPDATE in database
+//            em.close();
+//
+//            tx.begin();
+//            em = JPA.createEntityManager();
+//
+//            User user = em.find(User.class, USER_ID);
+//
+//            Assert.assertEquals(user.getUsername(), "alejandro");
+//
+//            tx.commit();
+//            em.close();
+//        }
+//        finally {_TM.rollback();}
+//    }
 }

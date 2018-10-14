@@ -38,6 +38,11 @@ public class DemoJPA extends TransactionManagerTest {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
+    /**
+     * Inserta, lee y actualiza un mensaje en base de datos.
+     * 
+     * @throws Exception
+     */
     @Test
     public void demo1() throws Exception {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("DemoPUnit");

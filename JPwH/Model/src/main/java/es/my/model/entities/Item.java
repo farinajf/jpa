@@ -37,7 +37,7 @@ public class Item {
     private long version;
 
     @NotNull
-    @Size(min = 1, max = 10, message = "El nombre es obligatorio!!")
+    @Size(min = 1, max = 20, message = "El nombre es obligatorio!!")
     private String nombre;
 
     @Future
