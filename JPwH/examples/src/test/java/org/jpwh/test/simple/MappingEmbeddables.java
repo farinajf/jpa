@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import org.jpwh.env.JPATest;
 
 /**
- *
+ * 
  */
 public class MappingEmbeddables extends JPATest {
 
