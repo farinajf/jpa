@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.jpwh.env;
+package es.my.jph.env;
 
 import java.util.HashMap;
 import java.util.Map;

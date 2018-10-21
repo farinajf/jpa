@@ -6,6 +6,7 @@
 
 package es.my.tests.simple;
 
+import es.my.jph.env.JPATest;
 import es.my.model.Constants;
 import es.my.model.entities.Categoria;
 import es.my.model.entities.Direccion;
@@ -27,7 +28,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
-import org.jpwh.env.JPATest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

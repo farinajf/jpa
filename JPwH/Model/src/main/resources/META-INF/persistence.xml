@@ -54,7 +54,7 @@
             
             <!--
             Enable this to try a custom table naming strategy
-            <property name="hibernate.physical_naming_strategy" value="org.jpwh.shared.CENamingStrategy"/>
+            <property name="hibernate.physical_naming_strategy" value="es.my.jph.shared.CENamingStrategy"/>
             -->
         </properties>
     </persistence-unit>

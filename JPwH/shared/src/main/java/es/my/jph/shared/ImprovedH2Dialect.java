@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.jpwh.shared;
+package es.my.jph.shared;
 
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.dialect.function.StandardSQLFunction;

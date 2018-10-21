@@ -6,11 +6,11 @@
 
 package es.my.tests.advanced;
 
+import es.my.jph.env.JPATest;
 import es.my.model.Constants;
 import es.my.model.entities.advanced.Item2;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
-import org.jpwh.env.JPATest;
 import org.testng.annotations.Test;
 
 /**

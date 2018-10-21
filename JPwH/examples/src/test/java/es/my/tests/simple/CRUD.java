@@ -6,6 +6,7 @@
 
 package es.my.tests.simple;
 
+import es.my.jph.env.JPATest;
 import es.my.model.Constants;
 import es.my.model.entities.Item;
 import java.util.Date;
@@ -13,7 +14,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.UserTransaction;
-import org.jpwh.env.JPATest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

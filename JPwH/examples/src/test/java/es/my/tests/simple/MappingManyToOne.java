@@ -6,6 +6,7 @@
 
 package es.my.tests.simple;
 
+import es.my.jph.env.JPATest;
 import es.my.model.Constants;
 import es.my.model.entities.Bid;
 import es.my.model.entities.Item;
@@ -13,7 +14,6 @@ import java.math.BigDecimal;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
-import org.jpwh.env.JPATest;
 import org.testng.annotations.Test;
 
 /**

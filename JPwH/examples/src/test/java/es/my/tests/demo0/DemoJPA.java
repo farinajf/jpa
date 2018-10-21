@@ -6,13 +6,13 @@
 
 package es.my.tests.demo0;
 
+import es.my.jph.env.TransactionManagerTest;
 import es.my.model.entities.Mensaje;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.transaction.UserTransaction;
-import org.jpwh.env.TransactionManagerTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,7 +40,7 @@ public class DemoJPA extends TransactionManagerTest {
     /**************************************************************************/
     /**
      * Inserta, lee y actualiza un mensaje en base de datos.
-     * 
+     *
      * @throws Exception
      */
     @Test

@@ -6,6 +6,7 @@
 
 package es.my.tests.demo0;
 
+import es.my.jph.env.TransactionManagerTest;
 import es.my.model.entities.Mensaje;
 import java.util.List;
 import javax.transaction.UserTransaction;
@@ -18,7 +19,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 import org.hibernate.resource.transaction.backend.jta.internal.JtaTransactionCoordinatorBuilderImpl;
 import org.hibernate.service.ServiceRegistry;
-import org.jpwh.env.TransactionManagerTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

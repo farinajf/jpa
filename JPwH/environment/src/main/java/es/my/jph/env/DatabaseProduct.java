@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jpwh.env;
+package es.my.jph.env;
 
 import bitronix.tm.resource.jdbc.PoolingDataSource;
 import java.util.Properties;
@@ -29,7 +29,7 @@ public enum DatabaseProduct {
                 // System.setProperty("h2.maxTraceDataLength", "256"); 256 bytes, default is 64 kilobytes
             }
         },
-        org.jpwh.shared.ImprovedH2Dialect.class.getName()),
+        es.my.jph.shared.ImprovedH2Dialect.class.getName()),
 
     ORACLE (new DataSourceConfiguration() {
             @Override

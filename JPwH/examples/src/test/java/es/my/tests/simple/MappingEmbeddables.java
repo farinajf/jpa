@@ -6,13 +6,13 @@
 
 package es.my.tests.simple;
 
+import es.my.jph.env.JPATest;
 import es.my.model.Constants;
 import es.my.model.entities.Direccion;
 import es.my.model.entities.Usuario;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
-import org.jpwh.env.JPATest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
