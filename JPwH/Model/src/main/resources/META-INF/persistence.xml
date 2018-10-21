@@ -59,17 +59,18 @@
         </properties>
     </persistence-unit>
 
-    <!-- *********************************************************************** -->
-    
-    <persistence-unit name="AdvancedPU">
+    <!--
+        My Advanced Persistence Unit
+    -->
+    <persistence-unit name="myAdvancedPUnit">
         <jta-data-source>myDS</jta-data-source>
-        <class>org.jpwh.model</class>
-        <class>org.jpwh.model.advanced.Item2</class>
-        <class>org.jpwh.model.advanced.Bid</class>
-        <class>org.jpwh.model.advanced.User</class>
-        <class>org.jpwh.model.advanced.Address</class>
-        <class>org.jpwh.model.advanced.City</class>
-        <class>org.jpwh.model.advanced.ItemBidSummary</class>
+        <class>es.my.model</class>
+        <class>es.my.model.entities.advanced.Item2</class>
+        <class>es.my.model.entities.advanced.Bid</class>
+        <class>es.my.model.entities.advanced.User</class>
+        <class>es.my.model.entities.advanced.Address</class>
+        <class>es.my.model.entities.advanced.City</class>
+        <class>es.my.model.entities.advanced.ItemBidSummary</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

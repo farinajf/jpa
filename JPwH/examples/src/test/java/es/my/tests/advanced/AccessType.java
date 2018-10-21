@@ -4,13 +4,13 @@
  * and open the template in the editor.
  */
 
-package org.jpwh.test.advanced;
+package es.my.tests.advanced;
 
+import es.my.model.Constants;
+import es.my.model.entities.advanced.Item2;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 import org.jpwh.env.JPATest;
-import org.jpwh.model.advanced.Item2;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -35,39 +35,48 @@ public class AccessType extends JPATest {
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
     @Override
-    public void configurePersistenceUnit() throws Exception {configurePersistenceUnit("AdvancedPU");}
+    public void configurePersistenceUnit() throws Exception {this.configurePersistenceUnit("myAdvancedPUnit");}
 
+    /**
+     *
+     * @throws Exception
+     */
     @Test
     public void storeLoadAccessType() throws Exception {
-        UserTransaction tx = _TM.getUserTransaction();
+        final UserTransaction tx = _TM.getUserTransaction();
+        final Long            id;
 
         try
         {
-            tx.begin();
+            {
+                tx.begin();
 
-            EntityManager em = JPA.createEntityManager();
+                final EntityManager em = JPA.createEntityManager();
 
-            Item2 someItem = new Item2();
-            someItem.setName("Some item");
-            someItem.setDescription("This is some description.");
+                final Item2 x = new Item2();
 
-            em.persist(someItem);
+                x.setNombre("x1");
+                x.setDesc  ("Descripcion de este objeto.");
 
-            tx.commit();
-            em.close();
+                em.persist(x);
 
-            Long ITEM_ID = someItem.getId();
+                tx.commit();
+                em.close();
 
-            /******************************************************************/
-            tx.begin();
-            em = JPA.createEntityManager();
+                id = x.getId();
+            }
+            {
+                tx.begin();
 
-            Item2 item = em.find(Item2.class, ITEM_ID);
+                final EntityManager em = JPA.createEntityManager();
 
-            Assert.assertEquals(item.getName(), "AUCTION: Some item");
+                final Item2 y = em.find(Item2.class, id);
 
-            tx.commit();
-            em.close();
+                Constants.print(y);
+
+                tx.commit();
+                em.close();
+            }
         }
         finally {_TM.rollback();}
     }
