@@ -41,6 +41,10 @@ public class MappingEmbeddables extends JPATest {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
+    /**
+     *
+     * @throws Exception
+     */
     @Test
     public void storeAndLoad() throws Exception {
         final UserTransaction tx = _TM.getUserTransaction();
@@ -83,6 +87,49 @@ public class MappingEmbeddables extends JPATest {
 
             tx.commit();
             em.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    /**
+     * Cuando se ejecuta el FLUSH, hibernate intenta hacer un INSERT y falla porque
+     * la PROVINCIA es NULL.
+     *
+     * @throws Exception
+     * @throws Throwable
+     */
+    @Test(expectedExceptions = org.hibernate.exception.ConstraintViolationException.class)
+    public void storeAndLoadInvalidObjects() throws Exception, Throwable {
+        final UserTransaction tx = _TM.getUserTransaction();
+
+        try
+        {
+            tx.begin();
+
+            final EntityManager em = JPA.createEntityManager();
+
+            final Usuario   u  = new Usuario();
+            final Direccion d  = new Direccion("Miguel de Cervantes", "12345", null); //PROVINCIA es Not Null
+            final Direccion df = new Direccion("Hernán Cortes",       "00000", "Vigo");
+
+            u.setName             ("JUAN");
+            u.setDireccion        (d);
+            u.setDireccionFacturas(df);
+
+            em.persist(u);
+
+            try
+            {
+                // El INSERT falla porque la PROVINCIA es nula.
+                em.flush();
+
+                // Note: If you try instead with tx.commit() and a flush side-effect,
+                // you won't get the ConstraintViolationException.
+                // Hibernate will catch it internally and simply mark the TX for rollback.
+
+                Constants.print(u);
+            }
+            catch (Exception e) {throw unwrapCauseOfType(e, org.hibernate.exception.ConstraintViolationException.class);}
         }
         finally {_TM.rollback();}
     }
