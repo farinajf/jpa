@@ -8,10 +8,14 @@ package es.my.tests.simple;
 
 import es.my.model.Constants;
 import es.my.model.entities.Categoria;
+import es.my.model.entities.Direccion;
 import es.my.model.entities.Item;
+import es.my.model.entities.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
@@ -588,11 +592,175 @@ public class SimpleTransactions extends JPATest {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     @Test
     public void scopeOfIdentity() throws Exception {
+        final UserTransaction tx = _TM.getUserTransaction();
+        final Long            id;
 
+        try
+        {
+            {
+                tx.begin();
+
+                final EntityManager em = JPA.createEntityManager();
+
+                final Item x = new Item();
+                x.setNombre("x-1");
+
+                em.persist(x);
+
+                tx.commit();
+                em.close();
+
+                id = x.getId();
+            }
+            {
+                tx.begin();
+
+                EntityManager em = JPA.createEntityManager();
+
+                final Item a = em.find(Item.class, id);
+                final Item b = em.find(Item.class, id);
+
+                Assert.assertTrue  (a == b);
+                Assert.assertTrue  (a.equals(b));
+                Assert.assertEquals(a.getId(), b.getId());
+
+                tx.commit();
+                em.close();
+
+
+                // Las instancias 'a' y 'b' estan en estado DETACHED.
+                tx.begin();
+
+                em = JPA.createEntityManager();
+
+                final Item c = em.find(Item.class, id);
+
+                Assert.assertTrue  (a != c);
+                Assert.assertFalse (a.equals(c));
+                Assert.assertEquals(a.getId(), c.getId());
+
+                tx.commit();
+                em.close();
+
+                final Set<Item> l = new HashSet<>();
+
+                l.add(a);
+                l.add(b);
+                l.add(c);
+
+                Assert.assertEquals(l.size(), 2);
+            }
+        }
+        finally {_TM.rollback();}
+    }
+
+    @Test
+    public void detach() throws Exception {
+        final UserTransaction tx = _TM.getUserTransaction();
+        final Long            id;
+
+        try
+        {
+            {
+                tx.begin();
+
+                final EntityManager em = JPA.createEntityManager();
+
+                final Usuario u = new Usuario();
+
+                u.setName             ("JUAN");
+                u.setDireccion        (new Direccion("CERVANTES",  "1234", "SANTIAGO"));
+                u.setDireccionFacturas(new Direccion("MAGALLANES", "0000", "VIGO"));
+
+                em.persist(u);
+
+                tx.commit();
+                em.close();
+
+                id = u.getId();
+            }
+            {
+                tx.begin();
+
+                final EntityManager em = JPA.createEntityManager();
+
+                final Usuario w = em.find(Usuario.class, id);
+
+                em.detach(w);
+
+                w.setName("JULIO");
+
+                Assert.assertFalse(em.contains(w));
+
+                tx.commit();
+                em.close();
+
+                Constants.print(w.toString());
+            }
+        }
+        finally {_TM.rollback();}
+    }
+
+    @Test
+    public void mergeDetached() throws Exception {
+        final UserTransaction tx = _TM.getUserTransaction();
+        final Long            id;
+        final Usuario         du;
+
+        try
+        {
+            {
+                tx.begin();
+
+                final EntityManager em = JPA.createEntityManager();
+
+                du = new Usuario();
+
+                du.setName             ("JUAN");
+                du.setDireccion        (new Direccion("CERVANTES",  "1234", "SANTIAGO"));
+                du.setDireccionFacturas(new Direccion("MAGALLANES", "0000", "VIGO"));
+
+                em.persist(du);
+
+                tx.commit();
+                em.close();
+
+                id = du.getId();
+
+                du.setName("JULIO");
+            }
+            {
+                tx.begin();
+
+                final EntityManager em = JPA.createEntityManager();
+
+                final Usuario mu = em.merge(du);
+
+                Constants.print(mu);
+
+                mu.setName("ALEJANDRO");
+
+                tx.commit();
+                em.close();
+            }
+            {
+                tx.begin();
+
+                final EntityManager em = JPA.createEntityManager();
+
+                final Usuario u = em.find(Usuario.class, id);
+
+                Constants.print(u);
+
+                tx.commit();
+                em.close();
+            }
+        }
+        finally {_TM.rollback();}
     }
 }

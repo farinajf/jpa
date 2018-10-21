@@ -14,9 +14,19 @@ public class Constants {
     public static final String ID_GENERATOR_POOLED = "ID_GENERATOR_POOLED";
     public static final long   TIME_OFFSET_MS      = 3600000L;
 
+    /**
+     *
+     * @param x
+     */
     public static void print(final String x) {
         System.out.println("*-------------------------------------------------*");
         System.out.println("*- " + x + "  -*");
         System.out.println("*-------------------------------------------------*");
     }
+
+    /**
+     * 
+     * @param x
+     */
+    public static void print(final Object x) {Constants.print(String.valueOf(x));}
 }
