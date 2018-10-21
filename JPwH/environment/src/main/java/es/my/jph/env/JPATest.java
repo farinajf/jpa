@@ -26,9 +26,9 @@ import org.testng.annotations.BeforeMethod;
  *
  */
 public class JPATest extends TransactionManagerTest {
-    public String   persistenceUnitName;
-    public String[] hbmResources;
-    public JPASetup JPA;
+    private   String   _persistenceUnitName;
+    private   String[] _hbmResources;
+    protected JPASetup _JPA;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -83,21 +83,33 @@ public class JPATest extends TransactionManagerTest {
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
     @BeforeClass
-    public void beforeClass() throws Exception {configurePersistenceUnit();}
+    public void beforeClass() throws Exception {JPATest.this.configurePU();}
 
-    public void configurePersistenceUnit() throws Exception {configurePersistenceUnit(null);}
+    /**
+     * Configura la Unidad de Persistencia de JPA a null.
+     *
+     * @throws Exception
+     */
+    public void configurePU() throws Exception {configurePU(null);}
 
-    public void configurePersistenceUnit(String persistenceUnitName, String... hbmResources) throws Exception {
-        this.persistenceUnitName = persistenceUnitName;
-        this.hbmResources        = hbmResources;
+    /**
+     * Configura la Unidad de Persistencia de JPA.
+     *
+     * @param persistenceUnitName
+     * @param hbmResources
+     * @throws Exception
+     */
+    public void configurePU(String persistenceUnitName, String... hbmResources) throws Exception {
+        this._persistenceUnitName = persistenceUnitName;
+        this._hbmResources        = hbmResources;
     }
 
     @BeforeMethod
     public void beforeMethod() throws Exception {
-        JPA = new JPASetup(_TM._databaseProduct, persistenceUnitName, hbmResources);
+        _JPA = new JPASetup(_TM._databaseProduct, _persistenceUnitName, _hbmResources);
 
-        JPA.dropSchema();
-        JPA.createSchema();
+        _JPA.dropSchema();
+        _JPA.createSchema();
 
         afterJPABootstrap();
     }
@@ -106,12 +118,12 @@ public class JPATest extends TransactionManagerTest {
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod() throws Exception {
-        if (JPA != null)
+        if (_JPA != null)
         {
             beforeJPAClose();
-            if ("true".equals(System.getProperty("keepSchema")) == false) JPA.dropSchema();
+            if ("true".equals(System.getProperty("keepSchema")) == false) _JPA.dropSchema();
 
-            JPA.getEntityManagerFactory().close();
+            _JPA.getEntityManagerFactory().close();
         }
     }
 

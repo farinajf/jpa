@@ -24,7 +24,7 @@ public class MappingManyToOne extends JPATest {
     private static final Logger LOG = Logger.getLogger(MappingManyToOne.class.getName());
 
     @Override
-    public void configurePersistenceUnit() throws Exception {this.configurePersistenceUnit("mySimplePUnit");}
+    public void configurePU() throws Exception {this.configurePU("mySimplePUnit");}
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -55,7 +55,7 @@ public class MappingManyToOne extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Item x = new Item();
 
@@ -79,7 +79,7 @@ public class MappingManyToOne extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Bid w = em.find(Bid.class, id);
 

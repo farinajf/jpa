@@ -55,7 +55,7 @@ public class SimpleTransactions extends JPATest {
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
     @Override
-    public void configurePersistenceUnit() throws Exception {this.configurePersistenceUnit("mySimplePUnit");}
+    public void configurePU() throws Exception {this.configurePU("mySimplePUnit");}
 
     /**
      * Persistencia basica de una entidad.
@@ -69,7 +69,7 @@ public class SimpleTransactions extends JPATest {
         {
             tx.begin();
 
-            em = JPA.createEntityManager();
+            em = _JPA.createEntityManager();
 
             Item x = new Item();
             x.setNombre("First item!!");
@@ -107,7 +107,7 @@ public class SimpleTransactions extends JPATest {
         try
         {
             {
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 tx.begin();
 
@@ -134,7 +134,7 @@ public class SimpleTransactions extends JPATest {
                 System.out.println("------------------------------------------------------------------------------------");
             }
             {
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 tx.begin();
 
@@ -164,7 +164,7 @@ public class SimpleTransactions extends JPATest {
         try
         {
             {
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 tx.begin();
 
@@ -183,7 +183,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Item x = em.find(Item.class, ITEM_ID);
 
@@ -195,7 +195,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Item x1 = em.find(Item.class, ITEM_ID);
                 final Item x2 = em.find(Item.class, ITEM_ID);
@@ -213,7 +213,7 @@ public class SimpleTransactions extends JPATest {
 
             tx.begin();
 
-            final EntityManager em = JPA.createEntityManager();
+            final EntityManager em = _JPA.createEntityManager();
 
             Assert.assertEquals(em.find(Item.class, ITEM_ID).getNombre(), "xxx");
 
@@ -240,7 +240,7 @@ public class SimpleTransactions extends JPATest {
         try
         {
             {
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 tx.begin();
 
@@ -257,7 +257,7 @@ public class SimpleTransactions extends JPATest {
                 Constants.print(x.toString());
             }
             {
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 tx.begin();
 
@@ -275,7 +275,7 @@ public class SimpleTransactions extends JPATest {
                 JPA offers PersistenceUnitUtil helper methods such as isLoaded() to detect
                 if you are working with an uninitialized proxy.
                 */
-                final PersistenceUnitUtil puu = JPA.getEntityManagerFactory().getPersistenceUnitUtil();
+                final PersistenceUnitUtil puu = _JPA.getEntityManagerFactory().getPersistenceUnitUtil();
 
                 System.out.println("Is loaded: " + puu.isLoaded(x)); // X is loaded: FALSE!!
                 Assert.assertFalse(puu.isLoaded(x));
@@ -320,7 +320,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Item x = new Item();
                 x.setNombre("X-01");
@@ -336,7 +336,7 @@ public class SimpleTransactions extends JPATest {
                 System.out.println("--------------------------------------------------------------------");
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 /*
                     find(): ejecuta una SELECT para cargar la entidad de base de datos.
@@ -378,7 +378,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Item x = em.find(Item.class, ITEM_ID);
 
@@ -405,7 +405,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Item x = new Item();
                 x.setNombre("x-1");
@@ -420,7 +420,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Item x = em.find(Item.class, id);
                 x.setNombre("x-2");
@@ -437,7 +437,7 @@ public class SimpleTransactions extends JPATest {
                         {
                             tx.begin();
 
-                            final EntityManager em = JPA.createEntityManager();
+                            final EntityManager em = _JPA.createEntityManager();
 
                             final Session s = em.unwrap(Session.class);
 
@@ -503,7 +503,7 @@ public class SimpleTransactions extends JPATest {
 
             tx.begin();
 
-            final EntityManager em = JPA.createEntityManager();
+            final EntityManager em = _JPA.createEntityManager();
 
             final Item x = new Item();
             x.setNombre("x-1");
@@ -538,8 +538,8 @@ public class SimpleTransactions extends JPATest {
         finally {_TM.rollback();}
     }
 
-    protected EntityManagerFactory _getDatabaseA() {return JPA.getEntityManagerFactory();}
-    protected EntityManagerFactory _getDatabaseB() {return JPA.getEntityManagerFactory();}
+    protected EntityManagerFactory _getDatabaseA() {return _JPA.getEntityManagerFactory();}
+    protected EntityManagerFactory _getDatabaseB() {return _JPA.getEntityManagerFactory();}
 
     /**
      * Deshabilita FLUSH antes de ejecutar una QUERY
@@ -555,7 +555,7 @@ public class SimpleTransactions extends JPATest {
         {
             tx.begin();
 
-            final EntityManager em = JPA.createEntityManager();
+            final EntityManager em = _JPA.createEntityManager();
 
             final Item x = new Item();
             x.setNombre("x-1");
@@ -573,7 +573,7 @@ public class SimpleTransactions extends JPATest {
         {
             tx.begin();
 
-            final EntityManager em = JPA.createEntityManager();
+            final EntityManager em = _JPA.createEntityManager();
 
             final Item x = em.find(Item.class, id);
             x.setNombre("x-2");
@@ -605,7 +605,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Item x = new Item();
                 x.setNombre("x-1");
@@ -620,7 +620,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                EntityManager em = JPA.createEntityManager();
+                EntityManager em = _JPA.createEntityManager();
 
                 final Item a = em.find(Item.class, id);
                 final Item b = em.find(Item.class, id);
@@ -636,7 +636,7 @@ public class SimpleTransactions extends JPATest {
                 // Las instancias 'a' y 'b' estan en estado DETACHED.
                 tx.begin();
 
-                em = JPA.createEntityManager();
+                em = _JPA.createEntityManager();
 
                 final Item c = em.find(Item.class, id);
 
@@ -669,7 +669,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Usuario u = new Usuario();
 
@@ -687,7 +687,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Usuario w = em.find(Usuario.class, id);
 
@@ -717,7 +717,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 du = new Usuario();
 
@@ -737,7 +737,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Usuario mu = em.merge(du);
 
@@ -751,7 +751,7 @@ public class SimpleTransactions extends JPATest {
             {
                 tx.begin();
 
-                final EntityManager em = JPA.createEntityManager();
+                final EntityManager em = _JPA.createEntityManager();
 
                 final Usuario u = em.find(Usuario.class, id);
 

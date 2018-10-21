@@ -24,7 +24,7 @@ public class MappingEmbeddables extends JPATest {
     private static final Logger LOG = Logger.getLogger(MappingEmbeddables.class.getName());
 
     @Override
-    public void configurePersistenceUnit() throws Exception {this.configurePersistenceUnit("mySimplePUnit");}
+    public void configurePU() throws Exception {this.configurePU("mySimplePUnit");}
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -54,7 +54,7 @@ public class MappingEmbeddables extends JPATest {
         {
             tx.begin();
 
-            final EntityManager em = JPA.createEntityManager();
+            final EntityManager em = _JPA.createEntityManager();
 
             final Usuario   u  = new Usuario();
             final Direccion d  = new Direccion("Miguel de Cervantes", "12345", "A Coruña");
@@ -77,7 +77,7 @@ public class MappingEmbeddables extends JPATest {
         {
             tx.begin();
 
-            final EntityManager em = JPA.createEntityManager();
+            final EntityManager em = _JPA.createEntityManager();
 
             final Usuario u = em.find(Usuario.class, id);
 
@@ -106,7 +106,7 @@ public class MappingEmbeddables extends JPATest {
         {
             tx.begin();
 
-            final EntityManager em = JPA.createEntityManager();
+            final EntityManager em = _JPA.createEntityManager();
 
             final Usuario   u  = new Usuario();
             final Direccion d  = new Direccion("Miguel de Cervantes", "12345", null); //PROVINCIA es Not Null

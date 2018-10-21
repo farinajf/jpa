@@ -33,7 +33,7 @@ public class CRUD extends JPATest {
 
         try
         {
-            EntityManager em = JPA.createEntityManager();
+            EntityManager em = _JPA.createEntityManager();
 
 
             tx.begin();
@@ -64,8 +64,8 @@ public class CRUD extends JPATest {
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
     @Override
-    public void configurePersistenceUnit() throws Exception {
-        configurePersistenceUnit("mySimplePUnit");
+    public void configurePU() throws Exception {
+        configurePU("mySimplePUnit");
     }
 
     @Test
@@ -80,7 +80,7 @@ public class CRUD extends JPATest {
         {
             tx.begin();
 
-            EntityManager em = JPA.createEntityManager();
+            EntityManager em = _JPA.createEntityManager();
 
             Item      x1 = new Item();
             x1.setNombre    ("Articulo-1");
