@@ -9,6 +9,7 @@ package es.my.tests.advanced;
 import es.my.jph.env.JPATest;
 import es.my.model.Constants;
 import es.my.model.entities.advanced.Item2;
+import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 import org.testng.annotations.Test;
@@ -17,7 +18,7 @@ import org.testng.annotations.Test;
  *
  * @author fran
  */
-public class AccessType extends JPATest {
+public class LazyProperties extends JPATest {
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -38,11 +39,12 @@ public class AccessType extends JPATest {
     public void configurePU() throws Exception {this.configurePU("myAdvancedPUnit");}
 
     /**
+     * Store and load properties.
      *
      * @throws Exception
      */
     @Test
-    public void storeLoadAccessType() throws Exception {
+    public void test1() throws Exception {
         final UserTransaction tx = _TM.getUserTransaction();
         final Long            id;
 
@@ -50,13 +52,17 @@ public class AccessType extends JPATest {
         {
             {
                 tx.begin();
-
                 final EntityManager em = _JPA.createEntityManager();
 
                 final Item2 x = new Item2();
 
-                x.setNombre("x1");
-                x.setDesc  ("Descripcion de este objeto.");
+                x.setNombre("X1");
+                x.setDesc  ("Pimer ejemplar del producto.");
+
+                byte[] bytes = new byte[131072];
+                new Random().nextBytes(bytes);
+
+                x.setImagen(bytes);
 
                 em.persist(x);
 
@@ -67,14 +73,13 @@ public class AccessType extends JPATest {
             }
             {
                 tx.begin();
-
                 final EntityManager em = _JPA.createEntityManager();
 
-                final Item2 y = em.find(Item2.class, id);
+                final Item2 x = em.find(Item2.class, id);
 
-                Constants.print(y.getDesc());
-
-                Constants.print(y);
+                // Accessing one initializes all lazy properties in a single SELECT
+                Constants.print(x.getDesc());
+                Constants.print(x.getImagen().length);
 
                 tx.commit();
                 em.close();
