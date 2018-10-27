@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -53,6 +54,9 @@ public class Item2 {
     @Column(length = 131072)
     private byte[] imagen;
 
+    @Lob
+    private java.sql.Blob imagenBlob;
+
 
 
 
@@ -81,16 +85,18 @@ public class Item2 {
     public String         getDesc()          {return desc;}
     public java.util.Date getFechaCreacion() {return fechaCreacion;}
     public byte[]         getImagen()        {return imagen;}
+    public java.sql.Blob  getImagenBlob()    {return imagenBlob;}
     public String         getNombre()        {return nombre;}
     public BigDecimal     getPrecioInicial() {return precioInicial;}
 
     public boolean isVerificado() {return verificado;}
 
-    public void setDesc         (final String     x) {this.desc          = x;}
-    public void setImagen       (final byte[]     x) {this.imagen        = x;}
-    public void setNombre       (final String     x) {this.nombre        = x.startsWith(_AUCTION) == false ? _AUCTION + x : x;}
-    public void setPrecioInicial(final BigDecimal x) {this.precioInicial = x;}
-    public void setVerificado   (final boolean    x) {this.verificado    = x;}
+    public void setDesc         (final String        x) {this.desc          = x;}
+    public void setImagen       (final byte[]        x) {this.imagen        = x;}
+    public void setImagenBlob   (final java.sql.Blob x) {this.imagenBlob    = x;}
+    public void setNombre       (final String        x) {this.nombre        = x.startsWith(_AUCTION) == false ? _AUCTION + x : x;}
+    public void setPrecioInicial(final BigDecimal    x) {this.precioInicial = x;}
+    public void setVerificado   (final boolean       x) {this.verificado    = x;}
 
     @Override
     public String toString() {
