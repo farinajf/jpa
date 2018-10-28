@@ -25,7 +25,7 @@ public class Constants {
     }
 
     /**
-     * 
+     *
      * @param x
      */
     public static void print(final Object x) {Constants.print(String.valueOf(x));}
