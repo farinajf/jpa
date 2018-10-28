@@ -75,6 +75,13 @@
       <jta-data-source>myDS</jta-data-source>
       <class>es.my.model</class>
       <class>es.my.model.entities.advanced.converter.ItemConverter</class>
+      <class>es.my.model.entities.advanced.converter.UsuarioConverter</class>
+      <!-- 
+             Si esta deshabilitado el escaneo automatico las clases @Converter
+             deben ser anhadidas aqui.
+      -->
+      <class>es.my.converters.ValorMonetarioConverter</class>
+      <class>es.my.converters.ZipCodeConverter</class>
       <exclude-unlisted-classes>true</exclude-unlisted-classes>
     
     <properties>

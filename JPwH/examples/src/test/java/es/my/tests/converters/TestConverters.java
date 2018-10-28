@@ -9,7 +9,10 @@ package es.my.tests.converters;
 import es.my.jph.env.JPATest;
 import es.my.model.Constants;
 import es.my.model.entities.advanced.ValorMonetario;
+import es.my.model.entities.advanced.converter.DireccionConverter;
 import es.my.model.entities.advanced.converter.ItemConverter;
+import es.my.model.entities.advanced.converter.SpainZipCode;
+import es.my.model.entities.advanced.converter.UsuarioConverter;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Locale;
@@ -76,6 +79,49 @@ public class TestConverters extends JPATest {
 
                 final EntityManager em = _JPA.createEntityManager();
                 final ItemConverter x  = em.find(ItemConverter.class, id);
+
+                Constants.print(x);
+
+                tx.commit();
+                em.close();
+            }
+        }
+        finally {_TM.rollback();}
+    }
+
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    public void test2() throws Exception {
+        final UserTransaction tx = _TM.getUserTransaction();
+        final Long            id;
+
+        try
+        {
+            {
+                tx.begin();
+
+                final EntityManager      em = _JPA.createEntityManager();
+                final UsuarioConverter   x  = new UsuarioConverter();
+                final DireccionConverter d  = new DireccionConverter("QUEVEDO 35", new SpainZipCode("22211"), "Vigo");
+
+                x.setNombre("JUAN");
+                x.setDireccion(d);
+
+                em.persist(x);
+
+                tx.commit();
+                em.close();
+
+                id = x.getId();
+            }
+            {
+                tx.begin();
+
+                final EntityManager    em = _JPA.createEntityManager();
+                final UsuarioConverter x  = em.find(UsuarioConverter.class, id);
 
                 Constants.print(x);
 
