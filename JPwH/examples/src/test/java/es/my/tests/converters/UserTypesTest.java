@@ -6,6 +6,7 @@
 package es.my.tests.converters;
 
 import es.my.jph.env.JPATest;
+import org.testng.annotations.Test;
 
 /**
  *
@@ -30,4 +31,9 @@ public class UserTypesTest extends JPATest {
     /**************************************************************************/
     @Override
     public void configurePU() throws Exception {this.configurePU("myTypesPUnit");}
+
+    @Test
+    public void test1() throws Exception {
+
+    }
 }
