@@ -34,16 +34,17 @@ public abstract class HerenciaBaseCRUD extends JPATest {
         }
     }
 
-    protected String _getBillingDetailsQuery() {
-        // Solo es valida si BillingDetails se mapea como @Entity
-        // No es valida si BillingDetails se mapea como @MappedSuperclass
-        return "select bd from BillingDetails bd";
-    }
-
+    /**
+     * Solo es valida si BillingDetails se mapea como @Entity
+     * No es valida si BillingDetails se mapea como @MappedSuperclass
+     *
+     * @return
+     */
+    protected String _getBillingDetailsQuery() {return "select bd from BillingDetails bd";}
     protected String _getCuentaBancariaQuery() {return "select cb from CuentaBancaria cb";}
     protected String _getTarjetaCreditoQuery() {return "select tc from TarjetaCredito tc";}
 
-    protected void _loadBillingDetails(final String sql, int expectedResultSize) throws Exception {
+    protected void _loadBillingDetails(final String sql) throws Exception {
         final UserTransaction tx = _TM.getUserTransaction();
 
         try
@@ -63,6 +64,8 @@ public abstract class HerenciaBaseCRUD extends JPATest {
                 tx.begin();
 
                 final EntityManager em = _JPA.createEntityManager();
+
+                System.out.println("sql: " + sql);
 
                 final List x = em.createQuery(sql).getResultList();
 
@@ -88,10 +91,9 @@ public abstract class HerenciaBaseCRUD extends JPATest {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public void loadBillingsDetails() throws Exception {_loadBillingDetails(_getBillingDetailsQuery(), 2);}
-
+    public void loadBillingsDetails()  throws Exception {_loadBillingDetails(_getBillingDetailsQuery());}
     @Test
-    public void loadBillingDetailsTC() throws Exception {_loadBillingDetails(_getTarjetaCreditoQuery(), 1);}
+    public void loadBillingDetailsTC() throws Exception {_loadBillingDetails(_getTarjetaCreditoQuery());}
     @Test
-    public void loadBillingDetailsCB() throws Exception {_loadBillingDetails(_getCuentaBancariaQuery(), 1);}
+    public void loadBillingDetailsCB() throws Exception {_loadBillingDetails(_getCuentaBancariaQuery());}
 }
