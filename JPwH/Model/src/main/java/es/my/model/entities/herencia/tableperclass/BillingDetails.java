@@ -6,9 +6,13 @@
 
 package es.my.model.entities.herencia.tableperclass;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
+import es.my.model.Constants;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -16,20 +20,16 @@ import javax.validation.constraints.NotNull;
  * @author fran
  */
 @Entity
-@AttributeOverride (
-        name = "owner",
-        column = @Column(name = "TC_OWNER", nullable = false)
-)
-public class TarjetaCredito2 extends BillingDetails2 {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "BILLING_DETAILS2")
+public abstract class BillingDetails {
+
+    @Id
+    @GeneratedValue(generator = Constants.ID_GENERATOR)
+    private Long id;
 
     @NotNull
-    private String numeroTC;
-
-    @NotNull
-    private String mesTC;
-
-    @NotNull
-    private String anhoTC;
+    private String owner;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -42,29 +42,22 @@ public class TarjetaCredito2 extends BillingDetails2 {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    public TarjetaCredito2() {super();}
+    protected BillingDetails() {}
 
-    public TarjetaCredito2(final String owner, final String numero, final String mes, final String anho) {
-        super(owner);
-
-        this.numeroTC = numero;
-        this.mesTC    = mes;
-        this.anhoTC   = anho;
+    protected BillingDetails(final String owner) {
+        this.owner = owner;
     }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public String getNumeroTC() {return numeroTC;}
-    public String getMesTC()    {return mesTC;}
-    public String getAnhoTC()   {return anhoTC;}
+    public Long   getId()    {return id;}
+    public String getOwner() {return owner;}
 
-    public void setNumeroTC(final String numeroTC) {this.numeroTC = numeroTC;}
-    public void setMesTC   (final String mesTC)    {this.mesTC    = mesTC;}
-    public void setAnhoTC  (final String anhoTC)   {this.anhoTC   = anhoTC;}
+    public void setOwner(final String x) {this.owner = x;}
 
     @Override
     public String toString() {
-        return "TarjetaCredito2{" + super.toString() + ", numeroTC=" + numeroTC + ", mesTC=" + mesTC + ", anhoTC=" + anhoTC + '}';
+        return "BillingDetails2{" + "id=" + id + ", owner=" + owner + '}';
     }
 }

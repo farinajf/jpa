@@ -6,12 +6,8 @@
 
 package es.my.model.entities.herencia.tableperclass;
 
-import es.my.model.Constants;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -19,15 +15,14 @@ import javax.validation.constraints.NotNull;
  * @author fran
  */
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class BillingDetails2 {
-
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
-    private Long id;
+@Table(name = "CUENTA_BANCARIA2")
+public class CuentaBancaria extends BillingDetails {
 
     @NotNull
-    private String owner;
+    private String cuenta;
+
+    @NotNull
+    private String banco;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -40,22 +35,26 @@ public abstract class BillingDetails2 {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    protected BillingDetails2() {}
+    public CuentaBancaria() {super();}
 
-    protected BillingDetails2(final String owner) {
-        this.owner = owner;
+    public CuentaBancaria(final String owner, final String cuenta, final String banco) {
+        super(owner);
+
+        this.cuenta = cuenta;
+        this.banco  = banco;
     }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long   getId()    {return id;}
-    public String getOwner() {return owner;}
+    public String getCuenta() {return cuenta;}
+    public String getBanco()  {return banco;}
 
-    public void setOwner(final String x) {this.owner = x;}
+    public void setCuenta(final String x) {this.cuenta = x;}
+    public void setBanco (final String x) {this.banco  = x;}
 
     @Override
     public String toString() {
-        return "BillingDetails2{" + "id=" + id + ", owner=" + owner + '}';
+        return "CuentaBancaria{" + super.toString() + ", cuenta=" + cuenta + ", banco=" + banco + '}';
     }
 }
