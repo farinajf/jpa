@@ -4,14 +4,15 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.asociaciones.manytoone;
+package es.my.model.entities.herencia.asociaciones.onetomany;
 
 import es.my.model.Constants;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -30,8 +31,8 @@ public class User {
     @NotNull
     private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private BillingDetails billing;
+    @OneToMany(mappedBy = "usuario")
+    private Set<BillingDetails> billingDetails = new HashSet<>();
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -44,7 +45,11 @@ public class User {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    public User() {}
+
+    /**************************************************************************/
+    /*                       Metodos Publicos                                 */
+    /**************************************************************************/
+public User() {}
 
     public User(final String x) {
         this.nombre = x;
@@ -53,15 +58,15 @@ public class User {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long           getId()      {return id;}
-    public String         getNombre()  {return nombre;}
-    public BillingDetails getBilling() {return billing;}
+    public Long                getId()             {return id;}
+    public String              getNombre()         {return nombre;}
+    public Set<BillingDetails> getBillingDetails() {return billingDetails;}
 
-    public void setNombre (final String         x) {this.nombre  = x;}
-    public void setBilling(final BillingDetails x) {this.billing = x;}
+    public void setNombre        (final String              x) {this.nombre         = x;}
+    public void setBillingDetails(final Set<BillingDetails> x) {this.billingDetails = x;}
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", nombre=" + nombre + ", billing=" + billing + '}';
+        return "User{" + "id=" + id + ", nombre=" + nombre + ", billingDetails=" + billingDetails + '}';
     }
 }

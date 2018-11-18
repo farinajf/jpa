@@ -4,34 +4,36 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.asociaciones.manytoone;
+package es.my.model.entities.herencia.asociaciones.onetomany;
 
 import es.my.model.Constants;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
+ * OJO: no se puede usar @MappedSuperclass cuando se usa en asociaciones.
  *
  * @author fran
  */
 @Entity
-@Table(name = "USERS")
-public class User {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class BillingDetails {
 
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
     private Long id;
 
     @NotNull
-    private String nombre;
+    private String owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private BillingDetails billing;
+    private User usuario;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -44,24 +46,26 @@ public class User {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    public User() {}
+    protected BillingDetails() {}
 
-    public User(final String x) {
-        this.nombre = x;
+    protected BillingDetails(final String owner) {
+        this.owner = owner;
     }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long           getId()      {return id;}
-    public String         getNombre()  {return nombre;}
-    public BillingDetails getBilling() {return billing;}
+    public Long   getId()      {return id;}
+    public String getOwner()   {return owner;}
+    public User   getUsuario() {return usuario;}
 
-    public void setNombre (final String         x) {this.nombre  = x;}
-    public void setBilling(final BillingDetails x) {this.billing = x;}
+    public void setOwner  (final String x) {this.owner   = x;}
+    public void setUsuario(final User   x) {this.usuario = x;}
+
+    public void pagar(final int x) {}
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", nombre=" + nombre + ", billing=" + billing + '}';
+        return "BillingDetails{" + "id=" + id + ", owner=" + owner + ", usuario=" + usuario + '}';
     }
 }

@@ -4,15 +4,9 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.asociaciones.manytoone;
+package es.my.model.entities.herencia.asociaciones.onetomany;
 
-import es.my.model.Constants;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -20,18 +14,13 @@ import javax.validation.constraints.NotNull;
  * @author fran
  */
 @Entity
-@Table(name = "USERS")
-public class User {
-
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
-    private Long id;
+public class CuentaBancaria extends BillingDetails {
 
     @NotNull
-    private String nombre;
+    private String cuenta;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private BillingDetails billing;
+    @NotNull
+    private String banco;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -44,24 +33,26 @@ public class User {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    public User() {}
+    public CuentaBancaria() {super();}
 
-    public User(final String x) {
-        this.nombre = x;
+    public CuentaBancaria(final String owner, final String cuenta, final String banco) {
+        super(owner);
+
+        this.cuenta = cuenta;
+        this.banco  = banco;
     }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long           getId()      {return id;}
-    public String         getNombre()  {return nombre;}
-    public BillingDetails getBilling() {return billing;}
+    public String getCuenta() {return cuenta;}
+    public String getBanco()  {return banco;}
 
-    public void setNombre (final String         x) {this.nombre  = x;}
-    public void setBilling(final BillingDetails x) {this.billing = x;}
+    public void setCuenta(final String x) {this.cuenta = x;}
+    public void setBanco (final String x) {this.banco  = x;}
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", nombre=" + nombre + ", billing=" + billing + '}';
+        return "CuentaBancaria{" + super.toString() + ", cuenta=" + cuenta + ", banco=" + banco + '}';
     }
 }

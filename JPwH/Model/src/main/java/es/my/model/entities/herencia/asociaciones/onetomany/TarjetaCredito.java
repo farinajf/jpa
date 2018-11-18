@@ -4,15 +4,9 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.asociaciones.manytoone;
+package es.my.model.entities.herencia.asociaciones.onetomany;
 
-import es.my.model.Constants;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -20,18 +14,16 @@ import javax.validation.constraints.NotNull;
  * @author fran
  */
 @Entity
-@Table(name = "USERS")
-public class User {
-
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
-    private Long id;
+public class TarjetaCredito extends BillingDetails {
 
     @NotNull
-    private String nombre;
+    private String numeroTC;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private BillingDetails billing;
+    @NotNull
+    private String mesTC;
+
+    @NotNull
+    private String anhoTC;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -44,24 +36,29 @@ public class User {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    public User() {}
+    public TarjetaCredito() {super();}
 
-    public User(final String x) {
-        this.nombre = x;
+    public TarjetaCredito(final String owner, final String numero, final String mes, final String anho) {
+        super(owner);
+
+        this.numeroTC = numero;
+        this.mesTC    = mes;
+        this.anhoTC   = anho;
     }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long           getId()      {return id;}
-    public String         getNombre()  {return nombre;}
-    public BillingDetails getBilling() {return billing;}
+    public String getNumeroTC() {return numeroTC;}
+    public String getMesTC()    {return mesTC;}
+    public String getAnhoTC()   {return anhoTC;}
 
-    public void setNombre (final String         x) {this.nombre  = x;}
-    public void setBilling(final BillingDetails x) {this.billing = x;}
+    public void setNumeroTC(final String numeroTC) {this.numeroTC = numeroTC;}
+    public void setMesTC   (final String mesTC)    {this.mesTC    = mesTC;}
+    public void setAnhoTC  (final String anhoTC)   {this.anhoTC   = anhoTC;}
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", nombre=" + nombre + ", billing=" + billing + '}';
+        return "TarjetaCredito{" + super.toString() + ", numeroTC=" + numeroTC + ", mesTC=" + mesTC + ", anhoTC=" + anhoTC + '}';
     }
 }
