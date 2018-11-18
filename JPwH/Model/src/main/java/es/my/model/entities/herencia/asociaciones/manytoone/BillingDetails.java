@@ -23,8 +23,6 @@ import javax.validation.constraints.NotNull;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class BillingDetails {
 
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
     private Long id;
 
     @NotNull
@@ -50,9 +48,12 @@ public abstract class BillingDetails {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
+    @Id
+    @GeneratedValue(generator = Constants.ID_GENERATOR)
     public Long   getId()    {return id;}
     public String getOwner() {return owner;}
 
+    public void setId   (final Long   x) {this.id    = x;}
     public void setOwner(final String x) {this.owner = x;}
 
     public void pagar(final int x) {}

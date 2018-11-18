@@ -7,6 +7,7 @@
 package es.my.tests.herencia;
 
 import es.my.jph.env.JPATest;
+import es.my.model.Constants;
 import es.my.model.entities.herencia.asociaciones.manytoone.BillingDetails;
 import es.my.model.entities.herencia.asociaciones.manytoone.TarjetaCredito;
 import es.my.model.entities.herencia.asociaciones.manytoone.User;
@@ -58,6 +59,10 @@ public class PolimorfismoManyToOne extends JPATest {
                 em.persist(tc);
                 em.persist(pepe);
 
+                tx.commit();
+
+                em.close();
+
                 id = pepe.getId();
             }
             {
@@ -80,9 +85,14 @@ public class PolimorfismoManyToOne extends JPATest {
                 final User           x  = em.find(User.class, id);
                 final BillingDetails bd = x.getBilling();
 
-                System.out.println("BillingDetails class (1): " + bd.getClass().getName());
+                Constants.print("BillingDetails class (1): " + bd.getClass().getName());
+
+                //System.out.println("billing: " + bd.toString());
 
                 final TarjetaCredito y = em.getReference(TarjetaCredito.class, bd.getId());
+
+                System.out.println("--------------------------------------------------------");
+                Constants.print("Tarjeta Credito: " + y.toString());
 
                 tx.commit();
                 em.close();
@@ -94,7 +104,7 @@ public class PolimorfismoManyToOne extends JPATest {
 
                 final User x = (User) em.createQuery("select u from User u left join fetch u.billing where u.id = :id").setParameter("id", id).getSingleResult();
 
-                System.out.println("BillingDetails class (2): " + x.getBilling().getClass().getName());
+                Constants.print("BillingDetails class (2): " + x.getBilling().getClass().getName());
 
                 tx.commit();
                 em.close();
