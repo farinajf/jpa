@@ -4,15 +4,10 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.joined;
+package es.my.model.entities.herencia.mixed;
 
-import es.my.model.Constants;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -20,16 +15,14 @@ import javax.validation.constraints.NotNull;
  * @author fran
  */
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "BILLING_DETAILS3")
-public abstract class BillingDetails {
-
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
-    private Long id;
+@DiscriminatorValue("CB")
+public class CuentaBancaria extends BillingDetails {
 
     @NotNull
-    private String owner;
+    private String cuenta;
+
+    @NotNull
+    private String banco;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -42,22 +35,26 @@ public abstract class BillingDetails {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    protected BillingDetails() {}
+    public CuentaBancaria() {super();}
 
-    protected BillingDetails(final String owner) {
-        this.owner = owner;
+    public CuentaBancaria(final String owner, final String cuenta, final String banco) {
+        super(owner);
+
+        this.cuenta = cuenta;
+        this.banco  = banco;
     }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long   getId()    {return id;}
-    public String getOwner() {return owner;}
+    public String getCuenta() {return cuenta;}
+    public String getBanco()  {return banco;}
 
-    public void setOwner(final String x) {this.owner = x;}
+    public void setCuenta(final String x) {this.cuenta = x;}
+    public void setBanco (final String x) {this.banco  = x;}
 
     @Override
     public String toString() {
-        return "BillingDetails3{" + "id=" + id + ", owner=" + owner + '}';
+        return "CuentaBancaria4{" + super.toString() + ", cuenta=" + cuenta + ", banco=" + banco + '}';
     }
 }

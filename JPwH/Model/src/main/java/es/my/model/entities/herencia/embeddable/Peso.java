@@ -4,32 +4,29 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.joined;
+package es.my.model.entities.herencia.embeddable;
 
-import es.my.model.Constants;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
+import java.math.BigDecimal;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 
 /**
  *
  * @author fran
  */
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "BILLING_DETAILS3")
-public abstract class BillingDetails {
-
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
-    private Long id;
+@Embeddable
+@AttributeOverrides({
+    @AttributeOverride(name = "nombre",  column = @Column(name = "PESO_NOMBRE")),
+    @AttributeOverride(name = "simbolo", column = @Column(name = "PESO_SIMBOLO"))
+})
+public class Peso extends Medida {
 
     @NotNull
-    private String owner;
+    @Column(name = "PESO")
+    private BigDecimal valor;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -42,22 +39,29 @@ public abstract class BillingDetails {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    protected BillingDetails() {}
+    public Peso() {}
 
-    protected BillingDetails(final String owner) {
-        this.owner = owner;
+    public Peso(final String nombre, final String simbolo, final BigDecimal peso) {
+        super(nombre, simbolo);
+
+        this.valor = peso;
     }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long   getId()    {return id;}
-    public String getOwner() {return owner;}
+    public BigDecimal getValor() {return valor;}
 
-    public void setOwner(final String x) {this.owner = x;}
+    public void setValor(final BigDecimal x) {this.valor = x;}
 
     @Override
     public String toString() {
-        return "BillingDetails3{" + "id=" + id + ", owner=" + owner + '}';
+        return "Peso{" + "valor=" + valor + '}';
     }
+
+    /**************************************************************************/
+    /*                  Metodos Publicos Estaticos                            */
+    /**************************************************************************/
+    public static Peso kilogramos(BigDecimal peso) {return new Peso("kilogramos", "Kg", peso);}
+    public static Peso toneladas (BigDecimal peso) {return new Peso("toneladas",  "Tn", peso);}
 }

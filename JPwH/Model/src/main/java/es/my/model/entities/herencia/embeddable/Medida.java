@@ -4,32 +4,23 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.joined;
+package es.my.model.entities.herencia.embeddable;
 
-import es.my.model.Constants;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 /**
  *
  * @author fran
  */
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "BILLING_DETAILS3")
-public abstract class BillingDetails {
-
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
-    private Long id;
+@MappedSuperclass
+public abstract class Medida {
 
     @NotNull
-    private String owner;
+    private String nombre;
+
+    @NotNull
+    private String simbolo;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -42,22 +33,24 @@ public abstract class BillingDetails {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    protected BillingDetails() {}
+    protected Medida() {}
 
-    protected BillingDetails(final String owner) {
-        this.owner = owner;
+    protected Medida(final String nombre, final String simbolo) {
+        this.nombre  = nombre;
+        this.simbolo = simbolo;
     }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long   getId()    {return id;}
-    public String getOwner() {return owner;}
+    public String getNombre()  {return nombre;}
+    public String getSimbolo() {return simbolo;}
 
-    public void setOwner(final String x) {this.owner = x;}
+    public void setNombre (final String x) {this.nombre  = x;}
+    public void setSimbolo(final String x) {this.simbolo = x;}
 
     @Override
     public String toString() {
-        return "BillingDetails3{" + "id=" + id + ", owner=" + owner + '}';
+        return "Medida{" + "nombre=" + nombre + ", simbolo=" + simbolo + '}';
     }
 }

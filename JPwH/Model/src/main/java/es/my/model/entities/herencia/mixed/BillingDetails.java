@@ -4,15 +4,15 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.joined;
+package es.my.model.entities.herencia.mixed;
 
 import es.my.model.Constants;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -20,8 +20,8 @@ import javax.validation.constraints.NotNull;
  * @author fran
  */
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "BILLING_DETAILS3")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TIPO")
 public abstract class BillingDetails {
 
     @Id
@@ -58,6 +58,6 @@ public abstract class BillingDetails {
 
     @Override
     public String toString() {
-        return "BillingDetails3{" + "id=" + id + ", owner=" + owner + '}';
+        return "BillingDetails4{" + "id=" + id + ", owner=" + owner + '}';
     }
 }

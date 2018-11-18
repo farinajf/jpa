@@ -4,32 +4,17 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.herencia.joined;
+package es.my.tests.herencia;
 
-import es.my.model.Constants;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import es.my.model.entities.herencia.mixed.CuentaBancaria;
+import es.my.model.entities.herencia.mixed.TarjetaCredito;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author fran
  */
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "BILLING_DETAILS3")
-public abstract class BillingDetails {
-
-    @Id
-    @GeneratedValue(generator = Constants.ID_GENERATOR)
-    private Long id;
-
-    @NotNull
-    private String owner;
+public class Mixed extends HerenciaBaseCRUD {
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -38,26 +23,23 @@ public abstract class BillingDetails {
     /**************************************************************************/
     /*                       Metodos Protegidos                               */
     /**************************************************************************/
+    @Override
+    protected Object _crearCuentaBancaria() {return new CuentaBancaria("SONIA", "123456", "SAN");}
+
+    @Override
+    protected Object _crearTarjetaCredito() {return new TarjetaCredito("SONIA", "1234567812345678", "12", "2018");}
 
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    protected BillingDetails() {}
-
-    protected BillingDetails(final String owner) {
-        this.owner = owner;
-    }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long   getId()    {return id;}
-    public String getOwner() {return owner;}
-
-    public void setOwner(final String x) {this.owner = x;}
-
     @Override
-    public String toString() {
-        return "BillingDetails3{" + "id=" + id + ", owner=" + owner + '}';
-    }
+    public void configurePU() throws Exception {super.configurePU("myMixedPUnit");}
+
+    @Test
+    @Override
+    public void loadBillingsDetails() throws Exception {super.loadBillingsDetails();}
 }
