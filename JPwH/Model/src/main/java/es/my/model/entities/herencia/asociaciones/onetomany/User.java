@@ -67,6 +67,6 @@ public User() {}
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", nombre=" + nombre + ", billingDetails=" + billingDetails + '}';
+        return "User{" + "id=" + id + ", nombre=" + nombre + ", billingDetails=" + billingDetails.size() + '}';
     }
 }
