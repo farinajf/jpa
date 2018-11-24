@@ -4,19 +4,20 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.colecciones.setofstrings;
+package es.my.model.entities.colecciones.bagofstrings;
 
 import es.my.model.Constants;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 
 /**
- * Ejecuta un insert por cada elemento de la coleccion.
+ * Coleccion de objetos que permite duplicados
  *
  * @author fran
  */
@@ -27,13 +28,15 @@ public class Item {
     @GeneratedValue(generator = Constants.ID_GENERATOR)
     private Long id;
 
-    @ElementCollection        // Es necesario para una coleccion de tipo valor
-    @CollectionTable (
-            name = "TABLA_IMAGENES",               // Por defecto es 'Item_imagenes'
-            joinColumns = @JoinColumn(name = "id") // Por defecto es 'Item_id'
+    @ElementCollection
+    @CollectionTable(name = "TABLA_IMAGENES")
+    @Column(name = "ARCHIVO")
+    @org.hibernate.annotations.CollectionId(
+            columns = @Column(name = "ID"),
+            type = @org.hibernate.annotations.Type(type = "long"),
+            generator = Constants.ID_GENERATOR
     )
-    @Column(name = "ARCHIVO") // Por defecto el nombre de la columna es 'imagenes'
-    private java.util.Set<String> imagenes = new java.util.HashSet<>();
+    private Collection<String> imagenes = new ArrayList<>();
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -50,10 +53,10 @@ public class Item {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long                  getId()       {return id;}
-    public java.util.Set<String> getImagenes() {return imagenes;}
+    public Long       getId()       {return id;}
+    public Collection getImagenes() {return imagenes;}
 
-    public void setImagenes(final java.util.Set<String> x) {imagenes = x;}
+    public void setImagenes(final Collection x) {imagenes = x;}
 
     @Override
     public String toString() {
