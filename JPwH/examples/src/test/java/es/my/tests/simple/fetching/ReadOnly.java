@@ -9,12 +9,15 @@ package es.my.tests.simple.fetching;
 import es.my.jph.env.JPATest;
 import es.my.jph.shared.util.CalendarUtil;
 import es.my.jph.shared.util.TestData;
+import es.my.model.Constants;
 import es.my.model.entities.fetching.readonly.Bid;
 import es.my.model.entities.fetching.readonly.Item;
 import es.my.model.entities.fetching.readonly.Usuario;
 import java.math.BigDecimal;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
+import org.hibernate.Session;
 import org.testng.annotations.Test;
 
 /**
@@ -107,11 +110,103 @@ public class ReadOnly extends JPATest {
 
     @Test
     public void entidadInmutable() throws Exception {
+        final FetchTestData   testData = _storeTestData();
+        final UserTransaction tx       = _TM.getUserTransaction();
 
+        try
+        {
+            tx.begin();
+
+            final EntityManager em = _JPA.createEntityManager();
+
+            final Long ITEM_ID = testData.items.getPrimerId();
+
+            final Item i = em.find(Item.class, ITEM_ID);
+
+            // Bid es inmutable (anotada con @org.hibernate.annotations.Immutable
+            // por tanto no se actualiza la base de datos
+            for (Bid b : i.getBids()) b.setCantidad(new BigDecimal("1000"));
+
+            em.flush();
+            em.clear();
+
+            final Item i2 = em.find(Item.class, ITEM_ID);
+
+            Constants.print(i2);
+
+            tx.commit();
+            em.close();
+
+            Constants.print("-----------------------------------------------");
+        }
+        finally {_TM.rollback();}
     }
 
     @Test
     public void readOnlySelectivo() throws Exception {
+        final FetchTestData   testData = _storeTestData();
+        final UserTransaction tx       = _TM.getUserTransaction();
 
+        try
+        {
+            tx.begin();
+
+            final EntityManager em      = _JPA.createEntityManager();
+            final Long          ITEM_ID = testData.items.getPrimerId();
+
+            {
+                em.unwrap(Session.class).setDefaultReadOnly(true);
+
+                final Item i = em.find(Item.class, ITEM_ID);
+                i.setNombre("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+                em.flush(); //No se actualiza la BBDD
+
+                Constants.print(" 1 ");
+            }
+
+            em.clear();
+
+            {
+                final Item i = em.find(Item.class, ITEM_ID);
+                i.setNombre("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+                em.unwrap(Session.class).setReadOnly(i, true);
+
+                em.flush(); //No se actualiza la BBDD
+
+                Constants.print(" 2 ");
+            }
+
+            em.clear();
+
+            {
+                org.hibernate.Query q = em.unwrap(Session.class).createQuery("SELECT i FROM Item i");
+
+                List<Item> result = q.setReadOnly(true).list();
+
+                for (Item x : result) x.setNombre("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx");
+
+                em.flush(); //No se actualiza la BBDD
+
+                Constants.print(" 3 - result.size: " + result.size());
+            }
+
+            em.clear();
+
+            {
+                final List<Item> result = em.createQuery("SELECT i FROM Item i").setHint(org.hibernate.annotations.QueryHints.READ_ONLY, true).getResultList();
+
+                for (Item x : result) x.setNombre("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx");
+
+                em.flush(); //No se actualiza la BBDD
+
+                Constants.print(" 4 - result.size: " + result.size());
+            }
+
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
     }
 }
