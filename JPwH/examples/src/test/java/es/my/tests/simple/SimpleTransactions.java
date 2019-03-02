@@ -72,13 +72,15 @@ public class SimpleTransactions extends JPATest {
             em = _JPA.createEntityManager();
 
             Item x = new Item();
-            x.setNombre("First item!!");
+            x.setNombre("X-1!!");
 
             em.persist(x);
 
+            x.setNombre("X-2!!");
+
             tx.commit();
 
-            System.out.println("item: " + x);
+            Constants.print(x);
         }
         catch (Exception e)
         {
