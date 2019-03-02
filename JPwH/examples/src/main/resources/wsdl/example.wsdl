@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="PurchaseOrder"
+             targetNamespace="http://actioncon.com/contract/po"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://actioncon.com/contract/po"
+>
+    <documentation>Ejemplo de contrato para un servicio web.</documentation>
+</definitions>
