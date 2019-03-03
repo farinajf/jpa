@@ -3,6 +3,35 @@
              targetNamespace="http://actioncon.com/contract/po"
              xmlns="http://schemas.xmlsoap.org/wsdl/"
              xmlns:tns="http://actioncon.com/contract/po"
->
+             xmlns:po="http://actioncon.com/schema/po">
     <documentation>Ejemplo de contrato para un servicio web.</documentation>
+    
+    <!-- 1.- Abstract Definitions -->
+    <!-- 1.1.- Types -->
+    <types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                    xmlns="http://actioncon.com/schema/po"
+                    targetNamespace="http://actioncon.com/schema/po"
+                    elementFormDefault="qualified">
+            <xsd:element name="purchaseOrder" type="PurchaseOrderType"/>
+            
+            <xsd:element name="acknowledgement" type="xsd:string"/>
+
+            <xsd:complexType name="PurchaseOrderType">
+                <xsd:sequence>
+                    <xsd:element name="poNumber" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:schema>
+    </types>
+    
+    <!-- 1.2.- Messages -->
+    <message name="msgPurchaseOrderRequest">
+        <part name="PurchaseOrder" element="po:purchaseOrder"/>
+    </message>
+    <message name="msgPurchaseOrderResponse">
+        <part name="Acknowledgement" element="po:acknowledgement"/>
+    </message>
+    <!-- Concrete Definitions -->
+    
 </definitions>
