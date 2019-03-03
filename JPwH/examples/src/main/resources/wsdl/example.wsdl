@@ -33,7 +33,7 @@
         <part name="Acknowledgement" element="po:acknowledgement"/>
     </message>
     
-    <!-- 1.3.- Port Type -->
+    <!-- 1.3.- Port Type: contenedor para un conjunto de operaciones relacionadas -->
     <portType name="ptPurchaseOrder">
         <!-- 1.3.1.- Operations -->
         <operation name="opSubmitOrder">
