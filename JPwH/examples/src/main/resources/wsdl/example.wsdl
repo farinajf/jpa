@@ -25,13 +25,23 @@
         </xsd:schema>
     </types>
     
-    <!-- 1.2.- Messages -->
+    <!-- 1.2.- Messages: msg + 'operation name' + 'Request/Response' -->
     <message name="msgPurchaseOrderRequest">
         <part name="PurchaseOrder" element="po:purchaseOrder"/>
     </message>
     <message name="msgPurchaseOrderResponse">
         <part name="Acknowledgement" element="po:acknowledgement"/>
     </message>
-    <!-- Concrete Definitions -->
+    
+    <!-- 1.3.- Port Type -->
+    <portType name="ptPurchaseOrder">
+        <!-- 1.3.1.- Operations -->
+        <operation name="opSubmitOrder">
+            <input  message="tns:msgPurchaseOrderRequest"/>
+            <output message="tns:msgPurchaseOrderResponse"/>
+        </operation>
+    </portType>
+    
+    <!-- 2.- Concrete Definitions -->
     
 </definitions>
