@@ -32,6 +32,7 @@ public class TestData {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
-    public Long getPrimerId() {return ids.length > 0 ? ids[0]             : null;}
-    public Long getUltimoId() {return ids.length > 0 ? ids[ids.length -1] : null;}
+    public Long[] getIds()      {return ids;}
+    public Long   getPrimerId() {return ids.length > 0 ? ids[0]             : null;}
+    public Long   getUltimoId() {return ids.length > 0 ? ids[ids.length -1] : null;}
 }
