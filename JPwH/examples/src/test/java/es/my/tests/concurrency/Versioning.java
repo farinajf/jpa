@@ -9,7 +9,9 @@ package es.my.tests.concurrency;
 import es.my.jph.env.JPATest;
 import es.my.jph.shared.util.TestData;
 import es.my.model.Constants;
+import es.my.model.entities.concurrency.version.Bid;
 import es.my.model.entities.concurrency.version.Categoria;
+import es.my.model.entities.concurrency.version.InvalidBidException;
 import es.my.model.entities.concurrency.version.Item;
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.transaction.UserTransaction;
 import org.testng.annotations.Test;
@@ -67,6 +70,36 @@ public class Versioning extends JPATest {
         em.close();
 
         return result;
+    }
+
+    private TestData _guardaItemBids() throws Exception {
+        final UserTransaction tx = _TM.getUserTransaction();
+
+        tx.begin();
+
+        final EntityManager em = _JPA.createEntityManager();
+
+        final Long[] ids  = new Long[1];
+        final Item   item = new Item("I-1");
+
+        em.persist(item);
+
+        ids[0] = item.getId();
+
+        for (int i = 1; i <= 3; i++) em.persist(new Bid(new BigDecimal(24 + i), item));
+
+        tx.commit();
+        em.close();
+
+        return new TestData(ids);
+    }
+
+    private Bid _getHighestBid(final EntityManager em, final Item item) {
+        try
+        {
+            return (Bid) em.createQuery("SELECT b FROM Bid b WHERE b.item = :item ORDER BY b.cantidad DESC").setParameter("item", item).setMaxResults(1).getSingleResult();
+        }
+        catch (NoResultException e) {return null;}
     }
 
     /**************************************************************************/
@@ -229,6 +262,75 @@ public class Versioning extends JPATest {
         finally             {_TM.rollback();}
     }
 
+    /**
+     * Force Increment
+     *
+     * @throws Throwable
+     */
+    @Test(expectedExceptions = org.hibernate.StaleObjectStateException.class)
+    public void demo3() throws Throwable {
+        final TestData        testData = _guardaItemBids();
+        final Long            ITEM_ID  = testData.getPrimerId();
+        final UserTransaction tx       = _TM.getUserTransaction();
+
+        try
+        {
+            tx.begin();
+
+            final EntityManager em = _JPA.createEntityManager();
+
+            final Item item = em.find(Item.class, ITEM_ID, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            final Bid  hb   = _getHighestBid(em, item);
+
+            Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    final UserTransaction tx = _TM.getUserTransaction();
+
+                    try
+                    {
+                        tx.begin();
+
+                        final EntityManager em = _JPA.createEntityManager();
+
+                        final Item item = em.find(Item.class, testData.getPrimerId(), LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+                        final Bid  hb   = _getHighestBid(em, item);
+
+                        try
+                        {
+                            em.persist(new Bid(new BigDecimal("80.0"), item, hb));
+                        }
+                        catch (InvalidBidException e) {}
+
+                        tx.commit();
+                        em.close();
+                    }
+                    catch (Exception e)
+                    {
+                        _TM.rollback();
+                        throw new RuntimeException("ERROR: executor operation: " + e, e);
+                    }
+
+                    return null;
+                }
+            }).get();
+
+            Constants.print("1.- SECOND BID");
+
+            try
+            {
+                em.persist(new Bid(new BigDecimal("90.0"), item, hb));
+            }
+            catch (InvalidBidException e) {}
+
+            Constants.print("2.- SECOND BID");
+
+            tx.commit();
+            em.close();
+        }
+        catch (Exception e) {throw unwrapCauseOfType(e, org.hibernate.StaleObjectStateException.class);}
+        finally {_TM.rollback();}
+    }
 
     /**************************************************************************/
     /*                       Clases Internas                                  */
