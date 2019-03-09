@@ -26,4 +26,12 @@
     </types>
     
     <!-- 1.2.- INTERFACE: contenedor para un conjunto de operaciones relacionadas -->
+    <interface name="purchaseOrderInterface">
+        <operation name="opSubmitOrder" pattern="http://www.w3.org/2006/01/wsdl/in-out">
+            <input  element="po:purchaseOrder"   messageLabel="In"/>
+            <output element="po:acknowledgement" messageLabel="Out"/>
+        </operation>
+    </interface>
+    
+    <!-- 2.- Concrete Definitions -->
 </description>
