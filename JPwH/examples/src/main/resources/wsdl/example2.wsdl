@@ -34,4 +34,13 @@
     </interface>
     
     <!-- 2.- Concrete Definitions -->
+    <binding name="purchaseOrderBinding" interface="purchaseOrderInterface" type="http://www.w3.org/2006/01/wsdl/soap" soapbind:protocol="http://www.w3.org/2003/05/soap/bindings/HTTP">
+
+        <operation ref="tns:opSubmitOrder" soapbind:mep="http://www.w3.org/2003/05/soap/mep/request-response" soapbind:action="http://actioncon.com/submitOrder/request"/>
+
+    </binding>
+    
+    <service name="purchaseOrderService" interface="purchaseOrderInterface">
+        <endpoint name="purchaseOrderEndpoint" binding="tns:purchaseOrderBinding" address="http://actioncon.com/services/soap12/purchaseOrder"/>
+    </service>
 </description>
