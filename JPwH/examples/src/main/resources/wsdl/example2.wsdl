@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DESCRIPTOIN por DEFINITION -->
+<description targetNamespace="http://actioncon.com/contract/po"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://actioncon.com/contract/po"
+             xmlns:po="http://actioncon.com/schema/po"
+             xmlns:soapbind="http://www.w3.org/ns/wsdl/soap">
+
+    <!-- 1.- Abstract Definitions -->
+    <!-- 1.1.- Types -->
+    <types>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                    xmlns="http://actioncon.com/schema/po"
+                    targetNamespace="http://actioncon.com/schema/po"
+                    elementFormDefault="qualified">
+            <xsd:element name="purchaseOrder" type="PurchaseOrderType"/>
+            
+            <xsd:element name="acknowledgement" type="xsd:string"/>
+
+            <xsd:complexType name="PurchaseOrderType">
+                <xsd:sequence>
+                    <xsd:element name="poNumber" type="xsd:int"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:schema>
+    </types>
+    
+    <!-- 1.2.- INTERFACE: contenedor para un conjunto de operaciones relacionadas -->
+</description>
