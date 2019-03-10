@@ -14,7 +14,9 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
@@ -141,6 +143,43 @@ public class Locking extends Versioning {
                     }).get();
                 }
             }
+
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    /**
+     * Establece un TIMEOUT en un find().
+     * Si no se puede establecer un bloqueo en el TIMEOUT especificado salta una excepcion.
+     * La excepcion depende del dialecto SQL (H2 lanza una PessimisticLockException).
+     *
+     * @throws Exception
+     */
+    @Test
+    public void findLock() throws Exception {
+        final ConcurrencyTestData testData = _guardaCategoriasItems();
+        final Long                CAT_ID   = testData.categorias.getPrimerId();
+        final UserTransaction     tx       = _TM.getUserTransaction();
+
+        Constants.print("DEMO P-2 => ");
+
+        try
+        {
+            tx.begin();
+
+            final EntityManager em = _JPA.createEntityManager();
+
+            final Map<String, Object> hints = new HashMap<String, Object>();
+            hints.put("javax.persistence.lock.timeout", 5000);
+
+            Constants.print("DEMO P-2 => before: " + new Date());
+            final Categoria c = em.find(Categoria.class, CAT_ID, LockModeType.PESSIMISTIC_WRITE, hints);
+
+            c.setNombre("C-2");
+
+            Constants.print("DEMO P-2 => " + c);
 
             tx.commit();
             em.close();
