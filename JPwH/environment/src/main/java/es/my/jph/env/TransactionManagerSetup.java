@@ -98,6 +98,8 @@ public class TransactionManagerSetup {
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
+    public DatabaseProduct getDatabaseProduct() {return _databaseProduct;}
+
     public Context getNamingContext() {return _context;}
 
     /**

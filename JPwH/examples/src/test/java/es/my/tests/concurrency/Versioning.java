@@ -33,7 +33,40 @@ public class Versioning extends JPATest {
     /**************************************************************************/
     /*                       Metodos Privados                                 */
     /**************************************************************************/
-    private ConcurrencyTestData _guardaCategoriasItems() throws Exception {
+    private TestData _guardaItemBids() throws Exception {
+        final UserTransaction tx = _TM.getUserTransaction();
+
+        tx.begin();
+
+        final EntityManager em = _JPA.createEntityManager();
+
+        final Long[] ids  = new Long[1];
+        final Item   item = new Item("I-1");
+
+        em.persist(item);
+
+        ids[0] = item.getId();
+
+        for (int i = 1; i <= 3; i++) em.persist(new Bid(new BigDecimal(24 + i), item));
+
+        tx.commit();
+        em.close();
+
+        return new TestData(ids);
+    }
+
+    private Bid _getHighestBid(final EntityManager em, final Item item) {
+        try
+        {
+            return (Bid) em.createQuery("SELECT b FROM Bid b WHERE b.item = :item ORDER BY b.cantidad DESC").setParameter("item", item).setMaxResults(1).getSingleResult();
+        }
+        catch (NoResultException e) {return null;}
+    }
+
+    /**************************************************************************/
+    /*                       Metodos Protegidos                               */
+    /**************************************************************************/
+    protected ConcurrencyTestData _guardaCategoriasItems() throws Exception {
         final UserTransaction tx = _TM.getUserTransaction();
 
         tx.begin();
@@ -71,40 +104,6 @@ public class Versioning extends JPATest {
 
         return result;
     }
-
-    private TestData _guardaItemBids() throws Exception {
-        final UserTransaction tx = _TM.getUserTransaction();
-
-        tx.begin();
-
-        final EntityManager em = _JPA.createEntityManager();
-
-        final Long[] ids  = new Long[1];
-        final Item   item = new Item("I-1");
-
-        em.persist(item);
-
-        ids[0] = item.getId();
-
-        for (int i = 1; i <= 3; i++) em.persist(new Bid(new BigDecimal(24 + i), item));
-
-        tx.commit();
-        em.close();
-
-        return new TestData(ids);
-    }
-
-    private Bid _getHighestBid(final EntityManager em, final Item item) {
-        try
-        {
-            return (Bid) em.createQuery("SELECT b FROM Bid b WHERE b.item = :item ORDER BY b.cantidad DESC").setParameter("item", item).setMaxResults(1).getSingleResult();
-        }
-        catch (NoResultException e) {return null;}
-    }
-
-    /**************************************************************************/
-    /*                       Metodos Protegidos                               */
-    /**************************************************************************/
 
     /**************************************************************************/
     /*                          Constructores                                 */
@@ -146,11 +145,11 @@ public class Versioning extends JPATest {
 
                 final Item i = em.find(Item.class, ITEM_ID);
 
-                Constants.print("Version: " + i.getVersion());
+                Constants.print("DEMO 1 => Version: " + i.getVersion());
 
                 i.setNombre("I-2");
 
-                //Threads
+                // Este Thread modifica el mismo ITEM_ID y realiza el commit primero
                 Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
@@ -161,8 +160,7 @@ public class Versioning extends JPATest {
                             tx.begin();
 
                             final EntityManager em = _JPA.createEntityManager();
-
-                            final Item i = em.find(Item.class, ITEM_ID);
+                            final Item          i  = em.find(Item.class, ITEM_ID);
 
                             i.setNombre("TH-1");
 
@@ -175,10 +173,12 @@ public class Versioning extends JPATest {
                             throw new RuntimeException("ERROR: thrad transaction: " + e, e);
                         }
 
+                        Constants.print("DEMO 1 => Item modificado en el Thread: " + i.toString());
                         return null;
                     }
                 }).get();
 
+                Constants.print("DEMO 1 => Saltara una excepcion por el bloqueo optimista.");
                 em.flush();
             }
         }
@@ -201,6 +201,8 @@ public class Versioning extends JPATest {
         final Long[]              CAT      = testData.categorias.getIds();
         final UserTransaction     tx       = _TM.getUserTransaction();
 
+        Constants.print("DEMO 2 => ");
+
         try
         {
             tx.begin();
@@ -211,12 +213,20 @@ public class Versioning extends JPATest {
 
             for (Long catId : CAT)
             {
-                final List<Item> items = em.createQuery("SELECT i FROM Item i WHERE i.categoria.id = :catId").setLockMode(LockModeType.OPTIMISTIC).setParameter("catId", catId).getResultList();
+                Constants.print("DEMO 2 => catId: " + catId);
+
+                // LockModeType.OPTIMISTIC: Hibernate ejecutara una SELECT durante el FLUSH, para comprobar si la Version del elemento es el mismo.
+                final List<Item> items = em.createQuery("SELECT i FROM Item i WHERE i.categoria.id = :catId")
+                        .setLockMode(LockModeType.OPTIMISTIC)
+                        .setParameter("catId", catId)
+                        .getResultList();
 
                 for (Item item : items) precioTotal = precioTotal.add(item.getPrecio());
 
                 if (catId.equals(testData.categorias.getPrimerId()))
                 {
+                    // Mediante este hilo se modifica la categoria de un item.
+                    // Por tanto se modifica la version de este ITEM
                     Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
                         @Override
                         public Object call() throws Exception {
@@ -228,12 +238,25 @@ public class Versioning extends JPATest {
 
                                 final EntityManager em = _JPA.createEntityManager();
 
-                                final List<Item> lista           = em.createQuery("SELECT i FROM Item i WHERE i.categoria.id = :catId").setParameter("catId", testData.categorias.getPrimerId()).getResultList();
+                                final List<Item> lista = em.createQuery("SELECT i FROM Item i WHERE i.categoria.id = :catId")
+                                        .setParameter("catId", testData.categorias.getPrimerId())
+                                        .getResultList();
+
                                 final Categoria  ultimaCategoria = em.getReference(Categoria.class, testData.categorias.getUltimoId());
 
-                                lista.iterator().next().setCategoria(ultimaCategoria);
+                                final Item aux = lista.iterator().next();
+                                aux.setCategoria(ultimaCategoria);
+
+                                Constants.print("DEMO 2 => AUX: " + aux);
 
                                 tx.commit();
+                                em.clear();
+
+                                {
+                                    tx.begin();
+                                    Constants.print("DEMO 2 => AUX: " + em.find(Item.class, aux.getId()));
+                                    tx.commit();
+                                }
                                 em.close();
                             }
                             catch (Exception e)
@@ -253,13 +276,18 @@ public class Versioning extends JPATest {
              * es el mismo.
              * Si las Versiones no coinciden, o se elimino el elemento de la tabla, se lanza una EXCEPTION (OptimisticLockException).
              */
+            Constants.print("DEMO 2 => Saltara una excepcion por el setLockMode(LockModeType.OPTIMISTIC).");
             tx.commit();
             em.close();
 
             Constants.print("PRECIO TOTAL: " + precioTotal.toString());
         }
-        catch (Exception e) {throw unwrapCauseOfType(e, org.hibernate.OptimisticLockException.class);}
-        finally             {_TM.rollback();}
+        catch (Exception e)
+        {
+            Constants.print(e);
+            throw unwrapCauseOfType(e, org.hibernate.OptimisticLockException.class);
+        }
+        finally {_TM.rollback();}
     }
 
     /**
@@ -273,15 +301,21 @@ public class Versioning extends JPATest {
         final Long            ITEM_ID  = testData.getPrimerId();
         final UserTransaction tx       = _TM.getUserTransaction();
 
+        Constants.print("DEMO 3 => ");
+
         try
         {
             tx.begin();
 
             final EntityManager em = _JPA.createEntityManager();
 
+            // LockModeType.OPTIMISTIC_FORCE_INCREMENT: se incrementa la version del Item incluso aunque no se modifique el Item.
             final Item item = em.find(Item.class, ITEM_ID, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
             final Bid  hb   = _getHighestBid(em, item);
 
+            Constants.print("DEMO 3 => item: " + item);
+
+            // Este hilo vuelve a leer el mismo ITEM estebleciendo el modo de bloqueo: OPTIMISTIC_FORCE_INCREMENT
             Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
@@ -302,6 +336,7 @@ public class Versioning extends JPATest {
                         }
                         catch (InvalidBidException e) {}
 
+                        // Actualiza la VERSION del ITEM cargado
                         tx.commit();
                         em.close();
                     }
@@ -315,7 +350,7 @@ public class Versioning extends JPATest {
                 }
             }).get();
 
-            Constants.print("1.- SECOND BID");
+            Constants.print("DEMO 3 => Se crea un nuevo BID para ese ITEM.");
 
             try
             {
@@ -323,12 +358,22 @@ public class Versioning extends JPATest {
             }
             catch (InvalidBidException e) {}
 
-            Constants.print("2.- SECOND BID");
+            Constants.print("DEMO 3 => Debería saltar na excepcion.");
 
+            // Actualiza la VERSION del ITEM cargado y salta un StaleObjectStateException
             tx.commit();
             em.close();
         }
-        catch (Exception e) {throw unwrapCauseOfType(e, org.hibernate.StaleObjectStateException.class);}
+        catch (Exception e)
+        {
+            Constants.print(e);
+
+            final Throwable th = unwrapCauseOfType(e, org.hibernate.StaleObjectStateException.class);
+
+            Constants.print(th);
+
+            throw th;
+        }
         finally {_TM.rollback();}
     }
 
