@@ -4,19 +4,25 @@
  * and open the template in the editor.
  */
 
-package es.my.tests.simple.fetching;
+package es.my.model.entities.fetching.proxy;
 
-import es.my.jph.shared.util.TestData;
+import es.my.model.Constants;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  *
  * @author fran
  */
-public class FetchTestData {
+@Entity
+@Table(name = "USUARIOS")
+public class Usuario {
 
-    public TestData items;
-    public TestData bids;
-    public TestData usuarios;
+    private Long   id;
+    private String nombre;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -29,9 +35,27 @@ public class FetchTestData {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
+    public Usuario() {}
+
+    public Usuario(final String x) {
+        this.nombre = x;
+    }
 
     /**************************************************************************/
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
+    @Id
+    @GeneratedValue(generator = Constants.ID_GENERATOR)
+    public Long getId() {return id;}
 
+    @NotNull
+    public String getNombre() {return nombre;}
+
+    public void setId    (final Long   x) {this.id     = x;}
+    public void setNombre(final String x) {this.nombre = x;}
+
+    @Override
+    public String toString() {
+        return "Usuario{" + "id=" + id + ", nombre=" + nombre + '}';
+    }
 }

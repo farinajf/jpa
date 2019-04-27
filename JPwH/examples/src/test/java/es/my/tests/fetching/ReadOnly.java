@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package es.my.tests.simple.fetching;
+package es.my.tests.fetching;
 
 import es.my.jph.env.JPATest;
 import es.my.jph.shared.util.CalendarUtil;
