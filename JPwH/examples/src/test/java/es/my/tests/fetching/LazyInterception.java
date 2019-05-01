@@ -89,7 +89,7 @@ public class LazyInterception extends JPATest {
     @Override
     public void configurePU() throws Exception {super.configurePU("myFetchingInterceptionPUnit");}
 
-    @Test
+    //@Test
     public void noUserProxy() throws Exception {
         final FetchTestData   td = _storeTestData();
         final UserTransaction tx = _TM.getUserTransaction();
@@ -116,12 +116,41 @@ public class LazyInterception extends JPATest {
             em.clear();
 
             {
-                //SELECT * FROM IETM WHERE ID = ?
+                //SELECT * FROM ITEM WHERE ID = ?
+                //SELECT * FROM USUARIOS WHERE ID = ? Ojo: Hibernate 5
                 Item i = em.find(Item.class, ITEM_ID);
 
                 Constants.print("");
                 Constants.print("Item.vendedor.id: " + i.getVendedor().getId());
             }
+
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    @Test
+    public void lazyBasic() throws Exception {
+        final FetchTestData   td = _storeTestData();
+        final UserTransaction tx = _TM.getUserTransaction();
+
+        Constants.print("LAZY BASIC");
+
+        try
+        {
+            tx.begin();
+
+            final EntityManager em = _JPA.createEntityManager();
+
+            final Long ITEM_ID = td.items.getPrimerId();
+
+            //SELECT * FROM ITEM WHERE ID = ?
+            //SELECT * FROM USUARIOS WHERE ID = ? Ojo: Hibernate 5
+            final Item i = em.find(Item.class, ITEM_ID);
+
+            Constants.print("");
+            Constants.print("Item.descripcion.length: " + i.getDescripcion().length());
 
             tx.commit();
             em.close();
