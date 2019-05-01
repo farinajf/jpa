@@ -15,6 +15,7 @@ import es.my.model.entities.fetching.proxy.Categoria;
 import es.my.model.entities.fetching.proxy.Item;
 import es.my.model.entities.fetching.proxy.Usuario;
 import java.math.BigDecimal;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUtil;
@@ -130,7 +131,7 @@ public class LazyProxyCollections extends JPATest {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void lazyEntityProxies() throws Exception {
         final FetchTestData   testData = _storeTestData();
         final UserTransaction tx       = _TM.getUserTransaction();
@@ -210,6 +211,52 @@ public class LazyProxyCollections extends JPATest {
                 final Bid b2 = em.find(Bid.class, b.getId());
                 Constants.print("b2.cantidad: " + b2.getCantidad());
             }
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
+    }
+
+    @Test
+    public void lazyCollections() throws Exception {
+        final FetchTestData   td = _storeTestData();
+        final UserTransaction tx = _TM.getUserTransaction();
+
+        Constants.print(" LAZY COLEECTIONS ");
+
+        try
+        {
+            tx.begin();
+
+            final EntityManager em = _JPA.createEntityManager();
+
+            long ITEM_ID = td.items.getPrimerId();
+
+            {
+                //SELECT * FROM ITEM WHERE ID = ?
+                final Item i = em.find(Item.class, ITEM_ID);
+
+                final Set<Bid> bids = i.getBids();
+
+                PersistenceUtil pu = Persistence.getPersistenceUtil();
+                Constants.print("Item.bids is loaded? " + pu.isLoaded(i, "bids"));
+
+                Constants.print("Set is assignable from Item.getBids.getClass? " + Set.class.isAssignableFrom(bids.getClass()));
+                Constants.print("Bids.class: " + bids.getClass().getName());
+
+                //SELECT * FROM BID WHERE ITEM_ID = ?
+                final Bid b1 = bids.iterator().next();
+            }
+
+            em.clear();
+
+            {
+                final Item i = em.find(Item.class, ITEM_ID);
+
+                //SELECT COUNT(B) FROM BID b WHERE b.ITEM_ID = ?
+                Constants.print("Itam.bids.size: " + i.getBids().size());
+            }
+
             tx.commit();
             em.close();
         }
