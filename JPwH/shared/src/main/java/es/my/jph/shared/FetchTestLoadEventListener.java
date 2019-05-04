@@ -17,7 +17,8 @@ import org.hibernate.event.spi.PostLoadEventListener;
 import org.hibernate.service.ServiceRegistry;
 
 /**
- *
+ * Se invoca despues de que una entidad es cargada.
+ * 
  * @author fran
  */
 public class FetchTestLoadEventListener implements PostLoadEventListener {
