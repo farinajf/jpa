@@ -9,11 +9,17 @@ package es.my.tests.fetching;
 import es.my.jph.env.JPATest;
 import es.my.jph.shared.util.CalendarUtil;
 import es.my.jph.shared.util.TestData;
+import es.my.model.Constants;
 import es.my.model.entities.fetching.nplusoneselects.Bid;
 import es.my.model.entities.fetching.nplusoneselects.Item;
 import es.my.model.entities.fetching.nplusoneselects.Usuario;
 import java.math.BigDecimal;
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 import org.testng.annotations.Test;
 
@@ -114,10 +120,10 @@ public class EagerQuery extends JPATest {
     public void configurePU() throws Exception {super.configurePU("myFetchingNPlusOneSelectsPUnit");}
 
     /**
-     * 
+     *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void fetchUsers() throws Exception {
         final UserTransaction tx = _TM.getUserTransaction();
         final FetchTestData   td = _store();
@@ -125,6 +131,40 @@ public class EagerQuery extends JPATest {
         try
         {
             tx.begin();
+
+            {
+                final EntityManager em = _JPA.createEntityManager();
+
+                // SELECT i.*, u.* FROM Item i
+                //    INNER JOIN USUARIOS u
+                //          ON i.VENDEDOR_ID = u.ID
+                final List<Item> items = em.createQuery("SELECT i FROM Item i JOIN FETCH i.vendedor").getResultList();
+
+                em.close();
+
+                for (Item i : items) Constants.print("Item.vendedor.nombre: " + i.getVendedor().getNombre());
+            }
+            {
+                Constants.print("CRITERIA");
+
+                final EntityManager   em = _JPA.createEntityManager();
+                final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+                final CriteriaQuery criteria = cb.createQuery();
+
+                final Root<Item> it = criteria.from(Item.class);
+                it.fetch("vendedor");
+                criteria.select(it);
+
+                // SELECT i.*, u.* FROM Item i
+                //    INNER JOIN USUARIOS u
+                //          ON i.VENDEDOR_ID = u.ID
+                final List<Item> items = em.createQuery(criteria).getResultList();
+
+                em.close();
+
+                for (Item i : items) Constants.print("Item.vendedor.nombre: " + i.getVendedor().getNombre());
+            }
 
             tx.commit();
         }
@@ -135,6 +175,7 @@ public class EagerQuery extends JPATest {
      *
      * @throws Exception
      */
+    @Test
     public void fetchBids() throws Exception {
         final UserTransaction tx = _TM.getUserTransaction();
         final FetchTestData   td = _store();
@@ -142,6 +183,41 @@ public class EagerQuery extends JPATest {
         try
         {
             tx.begin();
+
+            {
+                final EntityManager em = _JPA.createEntityManager();
+
+                // SELECT i.*, b.* FROM Item i
+                //   LEFT OUTER JOIN Bid b
+                //        ON i.ID = b.ITEM_ID
+                final List<Item> items = em.createQuery("SELECT i FROM Item i LEFT JOIN FETCH i.bids").getResultList();
+                //final List<Item> items = em.createQuery("SELECT i FROM Item i").getResultList();
+
+                em.close();
+
+                for (Item i : items) Constants.print("Item.bids.size: " + i.getNombre() + " - " + i.getBids().size());
+            }
+            {
+                Constants.print("CRITERIA");
+
+                final EntityManager   em = _JPA.createEntityManager();
+                final CriteriaBuilder cb = em.getCriteriaBuilder();
+
+                final CriteriaQuery criteria = cb.createQuery();
+
+                final Root<Item> it = criteria.from(Item.class);
+                it.fetch("bids", JoinType.LEFT);
+                criteria.select(it);
+
+                // SELECT i.*, b.* FROM Item i
+                //   LEFT OUTER JOIN Bid b
+                //        ON i.ID = b.ITEM_ID
+                final List<Item> items = em.createQuery(criteria).getResultList();
+
+                em.close();
+
+                for (Item i : items) Constants.print("Item.bids.size: " + i.getNombre() + " - " + i.getBids().size());
+            }
 
             tx.commit();
         }
