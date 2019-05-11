@@ -19,7 +19,11 @@ import javax.transaction.UserTransaction;
 import org.testng.annotations.Test;
 
 /**
+ * Eager fetching with multiple SELECT's
  *
+ * En lugar de ejecutar una JOIN para cargar las entidades de manera EAGERLY,
+ * ejecuta multiples SELECT.
+ * 
  * @author fran
  */
 public class EagerSelect extends JPATest {

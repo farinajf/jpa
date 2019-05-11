@@ -9,26 +9,25 @@ package es.my.tests.fetching;
 import es.my.jph.env.JPATest;
 import es.my.jph.shared.util.CalendarUtil;
 import es.my.jph.shared.util.TestData;
-import es.my.model.Constants;
-import es.my.model.entities.fetching.subselect.Bid;
-import es.my.model.entities.fetching.subselect.Item;
-import es.my.model.entities.fetching.subselect.Usuario;
+import es.my.model.entities.fetching.nplusoneselects.Bid;
+import es.my.model.entities.fetching.nplusoneselects.Item;
+import es.my.model.entities.fetching.nplusoneselects.Usuario;
 import java.math.BigDecimal;
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 import org.testng.annotations.Test;
 
+import static es.my.jph.env.TransactionManagerTest._TM;
+
 /**
- * Prefetching collections with SUBSELECTS
+ * Dynamic EAGER fetching
  *
- * Mecanismo de optimizacion consistente en ejecutar SUBSELECTS para cargar
- * colecciones de entidades declaradas como LAZY, en el momento en el que se
- * fuerza la inicializacion de un elemento de la coleccion.
- * 
+ * Estrategia consistente en establecer el modo EAGER en una consulta cuando la
+ * estrategia global es LAZY.
+ *
  * @author fran
  */
-public class Subselect extends JPATest {
+public class EagerQuery extends JPATest {
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -84,7 +83,7 @@ public class Subselect extends JPATest {
         itemIds[2] = item.getId();
         for (int i = 1; i<=1; i++)
         {
-            final Bid bid = new Bid(item, u1, new BigDecimal(1+i));
+            final Bid bid = new Bid(item, u1, new BigDecimal(3+i));
             item.getBids().add(bid);
             em.persist(bid);
         }
@@ -112,39 +111,39 @@ public class Subselect extends JPATest {
     /*                       Metodos Publicos                                 */
     /**************************************************************************/
     @Override
-    public void configurePU() throws Exception {super.configurePU("myFetchingSubselectPUnit");}
+    public void configurePU() throws Exception {super.configurePU("myFetchingNPlusOneSelectsPUnit");}
 
+    /**
+     * 
+     * @throws Exception
+     */
     @Test
-    public void fetchCollectionSubselect() throws Exception {
+    public void fetchUsers() throws Exception {
         final UserTransaction tx = _TM.getUserTransaction();
-
-        _store();
+        final FetchTestData   td = _store();
 
         try
         {
             tx.begin();
 
-            final EntityManager em = _JPA.createEntityManager();
+            tx.commit();
+        }
+        finally {_TM.rollback();}
+    }
 
-            // SELECT * FROM ITEM
-            List<Item> items = em.createQuery("SELECT i FROM Item i").getResultList();
+    /**
+     *
+     * @throws Exception
+     */
+    public void fetchBids() throws Exception {
+        final UserTransaction tx = _TM.getUserTransaction();
+        final FetchTestData   td = _store();
 
-            // SELECT * FROM BID WHERE ITEM_ID IN (SELECT * FROM ITEM)
-            for (Item x : items) Constants.print("1.- Item.bids.size: " + x.getBids().size());
-
-            em.clear();
-
-            // SELECT * FROM ITEM
-            items = em.createQuery("SELECT i FROM Item i").getResultList();
-            // SELECT * FROM BID WHERE ITEM_ID IN (SELECT * FROM ITEM)
-            Constants.print("2.- items[0].bid.size: " + items.iterator().next().getBids().size());
-
-            em.clear();
-
-            for (Item x : items) Constants.print("3.- Item.bids.size: " + x.getBids().size());
+        try
+        {
+            tx.begin();
 
             tx.commit();
-            em.close();
         }
         finally {_TM.rollback();}
     }
