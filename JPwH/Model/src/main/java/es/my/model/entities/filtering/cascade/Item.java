@@ -71,4 +71,9 @@ public class Item {
     public void setNombre  (final String   x) {this.nombre   = x;}
     public void setVendedor(final Usuario  x) {this.vendedor = x;}
     public void setBids    (final Set<Bid> x) {this.bids     = x;}
+
+    @Override
+    public String toString() {
+        return "Item{" + "id=" + id + ", nombre=" + nombre + ", vendedor=" + vendedor + ", bids=" + bids + '}';
+    }
 }

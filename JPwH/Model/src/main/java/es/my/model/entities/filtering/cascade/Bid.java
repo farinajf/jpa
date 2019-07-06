@@ -88,6 +88,6 @@ public class Bid {
 
     @Override
     public String toString() {
-        return "Bid{" + "id=" + id + ", item=" + item + ", cantidad=" + cantidad + '}';
+        return "Bid{" + "id=" + id + ", item=" + item.getNombre() + ", cantidad=" + cantidad + '}';
     }
 }
