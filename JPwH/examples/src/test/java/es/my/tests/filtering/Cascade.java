@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
+import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
 import org.testng.annotations.Test;
@@ -132,7 +133,7 @@ public class Cascade extends JPATest {
      *
      * @throws Throwable
      */
-    @Test
+    //@Test
     public void refresh() throws Throwable {
         final UserTransaction tx = _TM.getUserTransaction();
 
@@ -259,8 +260,59 @@ public class Cascade extends JPATest {
      *
      * @throws Throwable
      */
-    //@Test
+    @Test
     public void replicate() throws Throwable {
+        final UserTransaction tx = _TM.getUserTransaction();
 
+        Long USUARIO_ID;
+        Long ITEM_ID;
+
+        try
+        {
+            {
+                tx.begin();
+
+                final EntityManager em = _JPA.createEntityManager();
+
+                final Usuario u = new Usuario("U-1");
+                em.persist(u);
+                USUARIO_ID = u.getId();
+
+                final Item i = new Item("I-1", u);
+                em.persist(i);
+                ITEM_ID = i.getId();
+
+                tx.commit();
+                em.close();
+            }
+
+            tx.begin();
+
+            final EntityManager em = _JPA.createEntityManager();
+
+            // SELECT i FROM Item i WHERE i.id = ?
+            final Item i = em.find(Item.class, ITEM_ID);
+
+            // SELECT u FROM USUARIOS u WHERE u.id = ?
+            Constants.print("Vendedor: " + i.getVendedor().getNombre());
+
+            tx.commit();
+            em.close();
+
+            tx.begin();
+            final EntityManager oem = _JPA.createEntityManager();
+
+            // SELECT id FROM Item     WHERE id = ?
+            // SELECT id FROM USUARIOS WHERE id = ?
+            oem.unwrap(Session.class).replicate(i, ReplicationMode.OVERWRITE);
+
+            Constants.print("__________COMMIT____________");
+
+            // UPDATE Item     SET nombre = ?, VENDEDOR_ID = ? WHERE id = ?
+            // UPDATE USUARIOS SET nombre = ?                  WHERE id = ?
+            tx.commit();
+            oem.close();
+        }
+        finally {_TM.rollback();}
     }
 }
