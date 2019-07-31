@@ -4,25 +4,32 @@
  * and open the template in the editor.
  */
 
-package es.my.model.entities.concurrency.version;
+package es.my.model.entities.filtering.dynamic;
 
 import es.my.model.Constants;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  *
  * @author fran
  */
 @Entity
-public class Categoria {
+@Table(name = "USUARIOS")
+public class Usuario {
 
     @Id
     @GeneratedValue(generator = Constants.ID_GENERATOR)
     private Long id;
 
+    @NotNull
     private String nombre;
+
+    @NotNull
+    private int rango = 0;
 
     /**************************************************************************/
     /*                       Metodos Privados                                 */
@@ -35,10 +42,16 @@ public class Categoria {
     /**************************************************************************/
     /*                          Constructores                                 */
     /**************************************************************************/
-    public Categoria() {}
+    public Usuario() {}
 
-    public Categoria(final String n) {
+    public Usuario(final String n) {
         this.nombre = n;
+    }
+
+    public Usuario(final String n, final int r) {
+        this(n);
+
+        this.rango = r;
     }
 
     /**************************************************************************/
@@ -46,11 +59,13 @@ public class Categoria {
     /**************************************************************************/
     public Long   getId()     {return id;}
     public String getNombre() {return nombre;}
+    public int    getRango()  {return rango;}
 
     public void setNombre(final String x) {this.nombre = x;}
+    public void setRango (final int    x) {this.rango  = x;}
 
     @Override
     public String toString() {
-        return "Categoria{" + "id=" + id + ", nombre=" + nombre + '}';
+        return "Usuario{" + "id=" + id + ", nombre=" + nombre + ", rango=" + rango + '}';
     }
 }
