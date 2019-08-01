@@ -10,10 +10,10 @@
     ),
     @org.hibernate.annotations.FilterDef(
             name = "limitByUserRankDefault",
-            defaultCondition = ":currentUserRank >= (SELECT u.RANGO FROM Usuarios u WHERE u.ID = VENDEDOR_ID)",
+            defaultCondition = ":rangoUsuarioActual >= (SELECT u.RANGO FROM Usuarios u WHERE u.ID = VENDEDOR_ID)",
             parameters = {
                 @org.hibernate.annotations.ParamDef(
-                        name = "currentUserRank",
+                        name = "rangoUsuarioActual",
                         type = "int"
                 )
             }

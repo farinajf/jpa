@@ -32,7 +32,7 @@ public class Categoria {
     @OneToMany(mappedBy = "categoria")
     @org.hibernate.annotations.Filter(
             name = "limitByUserRank",
-            condition = ":currentUserRank >= (SELECT u.RANGO FROM USUARIOS u WHERE u.ID = VENDEDOR_ID)"
+            condition = ":rangoUsuarioActual >= (SELECT u.RANGO FROM USUARIOS u WHERE u.ID = VENDEDOR_ID)"
     )
     private Set<Item> items = new HashSet<Item>();
 

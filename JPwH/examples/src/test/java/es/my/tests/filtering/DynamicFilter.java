@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.UserTransaction;
+import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.testng.annotations.Test;
 
@@ -142,7 +143,39 @@ public class DynamicFilter extends JPATest {
 
     @Test
     public void filterCollection() throws Throwable {
+        final DynamicFilterTestData td = _store();
+        final UserTransaction       tx = _TM.getUserTransaction();
 
+        try
+        {
+            tx.begin();
+
+            final EntityManager em = _JPA.createEntityManager();
+
+            final Long CATEGORIA_ID = td.categorias.getPrimerId();
+
+            {
+                final Filter f = em.unwrap(Session.class).enableFilter("limitByUserRank");
+
+                Constants.print("Filtrando Items por Rango <= 0");
+                f.setParameter("rangoUsuarioActual", 0);
+
+                final Categoria c1 = em.find(Categoria.class, CATEGORIA_ID);
+
+                for (Item i : c1.getItems()) System.out.println(">> Item: " + i);
+                em.clear();
+
+                Constants.print("Filtrando Items por Rango <= 100");
+                f.setParameter("rangoUsuarioActual", 100);
+                final Categoria c2 = em.find(Categoria.class, CATEGORIA_ID);
+                for (Item i : c2.getItems()) System.out.println(">> Item: " + i);
+            }
+            em.clear();
+
+            tx.commit();
+            em.close();
+        }
+        finally {_TM.rollback();}
     }
 
     /**
